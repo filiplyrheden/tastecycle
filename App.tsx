@@ -1,19 +1,25 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./src/screens/LoginScreen";
 import MenuScreen from "./src/screens/MenuScreen";
-import RecipesScreen from "./src/screens/RecipesScreen";
+import RecipeScreen from "./src/screens/RecipesScreen";
 
-const Tab = createBottomTabNavigator();
+export type RootStackParamList = {
+  Login: undefined;
+  Menu: undefined;
+  Recipe: { title: string } | undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Tab.Navigator screenOptions={{ headerTitleAlign: "center" }}>
-        <Tab.Screen name="Login" component={LoginScreen} />
-        <Tab.Screen name="Menu" component={MenuScreen} />
-        <Tab.Screen name="Recipes" component={RecipesScreen} />
-      </Tab.Navigator>
+      <Stack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Menu" component={MenuScreen} />
+        <Stack.Screen name="Recipe" component={RecipeScreen} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

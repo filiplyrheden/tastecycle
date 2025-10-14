@@ -1,21 +1,61 @@
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../App";
 
-export default function MenuScreen() {
+type Props = NativeStackScreenProps<RootStackParamList, "Menu">;
+
+const items = [
+  { id: "1", title: "Spaghetti & köttfärssås" },
+  { id: "2", title: "Kycklinggryta" },
+  { id: "3", title: "Vegolasagne" },
+];
+
+export default function MenuScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Menu</Text>
-      <Text style={styles.text}>Veckomeny kommer här.</Text>
+
+      <FlatList
+        data={items}
+        keyExtractor={(it) => it.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.push("Recipe", { title: item.title })}
+          >
+            <Text style={styles.cardTitle}>{item.title}</Text>
+            <Text style={styles.cardHint}>Tryck för recept</Text>
+          </TouchableOpacity>
+        )}
+        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+        contentContainerStyle={{ paddingVertical: 12 }}
+      />
+
+      <View style={{ height: 12 }} />
+      <Button
+        title="Tillbaka till Login"
+        onPress={() => navigation.replace("Login")}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 16,
+  container: { flex: 1, padding: 16 },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 12,
+    textAlign: "center",
   },
-  title: { fontSize: 24, fontWeight: "700", marginBottom: 8 },
-  text: { fontSize: 16, color: "#555", textAlign: "center" },
+  card: { borderWidth: 1, borderColor: "#eee", borderRadius: 12, padding: 12 },
+  cardTitle: { fontSize: 16, fontWeight: "600" },
+  cardHint: { fontSize: 12, color: "#666", marginTop: 4 },
 });
