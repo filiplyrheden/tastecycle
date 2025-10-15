@@ -10,6 +10,10 @@ export default function LoginScreen({ navigation }: Props) {
       <Text style={styles.title}>Login</Text>
       <Text style={styles.text}>Ingen auth – bara vidare till menyn.</Text>
       <Button title="Gå till Menu" onPress={() => navigation.replace("Menu")} />
+      <Button
+        title="Gå till Example"
+        onPress={() => navigation.replace("Example")}
+      />
     </View>
   );
 }
