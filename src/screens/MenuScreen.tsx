@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../App";
+import { AppStackParamList } from "../../App";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Menu">;
+type Props = NativeStackScreenProps<AppStackParamList, "Menu">;
 
 const items = [
   { id: "1", title: "Spaghetti & köttfärssås" },
@@ -39,10 +39,6 @@ export default function MenuScreen({ navigation }: Props) {
       />
 
       <View style={{ height: 12 }} />
-      <Button
-        title="Tillbaka till Login"
-        onPress={() => navigation.replace("Login")}
-      />
     </View>
   );
 }

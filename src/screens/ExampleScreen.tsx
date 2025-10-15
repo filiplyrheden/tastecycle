@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { View, TextInput, Button, FlatList, Text } from "react-native";
 import { createRecipe, listMyRecipes } from "../lib/recipes";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../App";
+import { AppStackParamList } from "../../App";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Example">;
+type Props = NativeStackScreenProps<AppStackParamList, "Example">;
 
 export default function ExampleScreen() {
   const [title, setTitle] = useState("");

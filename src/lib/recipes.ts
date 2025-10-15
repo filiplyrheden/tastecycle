@@ -10,8 +10,6 @@ type RecipeInput = {
 };
 
 export async function createRecipe(data: RecipeInput) {
-  // user_id sätts i policyn (WITH CHECK user_id = auth.uid()),
-  // men vi skickar gärna med för tydlighet:
   const { data: user } = await supabase.auth.getUser();
   const user_id = user.user?.id;
 
@@ -32,7 +30,6 @@ export async function listMyRecipes(search?: string) {
     .order("created_at", { ascending: false });
 
   if (search && search.trim()) {
-    // enkel sökning i title (uTrustar pg_trgm-indexet)
     q = q.ilike("title", `%${search}%`);
   }
 

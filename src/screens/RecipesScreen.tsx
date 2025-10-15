@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useLayoutEffect } from "react";
-import { RootStackParamList } from "../../App";
+import { AppStackParamList } from "../../App";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Recipe">;
+type Props = NativeStackScreenProps<AppStackParamList, "Recipe">;
 
 export default function RecipeScreen({ route, navigation }: Props) {
   const title = route.params?.title ?? "Recipe";
