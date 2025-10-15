@@ -31,10 +31,12 @@ function RecipeRow({
   onChanged: () => void;
 }) {
   const [editing, setEditing] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [title, setTitle] = useState(item.title);
   const [ingredientsText, setIngredientsText] = useState(
     item.ingredients?.join("\n") ?? ""
   );
+  const [instructions, setInstructions] = useState(item.instructions ?? "");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -44,6 +46,7 @@ function RecipeRow({
       await updateRecipe(item.id, {
         title,
         ingredients: ingredientsText.split("\n").filter(Boolean),
+        instructions,
       });
       setEditing(false);
       onChanged();
@@ -86,6 +89,12 @@ function RecipeRow({
           placeholder="Ingredienser (en per rad)"
           multiline
         />
+        <TextInput
+          value={instructions}
+          onChangeText={setInstructions}
+          placeholder="Instruktioner"
+          multiline
+        />
         <View style={{ flexDirection: "row", gap: 8 }}>
           <Button
             title={saving ? "Sparar…" : "Spara"}
@@ -104,15 +113,20 @@ function RecipeRow({
       {item.ingredients?.map((ing, i) => (
         <Text key={i}>• {ing}</Text>
       ))}
+      <Text
+        style={{ marginTop: 6, lineHeight: 20 }}
+        numberOfLines={expanded ? undefined : 3}
+      >
+        {item.instructions}
+      </Text>
+      <Button
+        title={expanded ? "Visa mindre" : "Visa instruktioner"}
+        onPress={() => setExpanded((v) => !v)}
+      />
+
       <View style={{ flexDirection: "row", gap: 8, marginTop: 6 }}>
         <Button title="Redigera" onPress={() => setEditing(true)} />
-        <View style={{ minWidth: 100 }}>
-          {deleting ? (
-            <ActivityIndicator />
-          ) : (
-            <Button title="Ta bort" color="#c0392b" onPress={onDelete} />
-          )}
-        </View>
+        <Button title="Ta bort" color="#c0392b" onPress={onDelete} />
       </View>
     </View>
   );
