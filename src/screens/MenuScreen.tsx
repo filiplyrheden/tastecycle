@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../../App";
+import { supabase } from "../lib/supabase";
 
 type Props = NativeStackScreenProps<AppStackParamList, "Menu">;
 
@@ -16,6 +17,10 @@ const items = [
   { id: "2", title: "Kycklinggryta" },
   { id: "3", title: "Vegolasagne" },
 ];
+
+async function onSignOut() {
+  await await supabase.auth.signOut();
+}
 
 export default function MenuScreen({ navigation }: Props) {
   return (
@@ -39,6 +44,7 @@ export default function MenuScreen({ navigation }: Props) {
       />
 
       <View style={{ height: 12 }} />
+      <Button title="Logga ut" onPress={onSignOut} />
     </View>
   );
 }

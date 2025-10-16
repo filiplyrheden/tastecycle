@@ -35,9 +35,9 @@ function AuthNavigator() {
 function MainAppNavigator() {
   return (
     <AppStack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
+      <AppStack.Screen name="Menu" component={MenuScreen} />
       <AppStack.Screen name="Example" component={ExampleScreen} />
       <AppStack.Screen name="Debug" component={DebugScreen} />
-      <AppStack.Screen name="Menu" component={MenuScreen} />
       <AppStack.Screen name="Recipe" component={RecipeScreen} />
     </AppStack.Navigator>
   );
@@ -45,9 +45,8 @@ function MainAppNavigator() {
 
 function RootNavigator() {
   const { session, loading } = useAuth();
-  if (loading) return null; // ev. splash
+  if (loading) return null;
 
-  // Rendera EN stack beroende på auth
   return session ? <MainAppNavigator /> : <AuthNavigator />;
 }
 
