@@ -48,6 +48,7 @@ export default function MenuScreen({ navigation }: Props) {
       />
 
       <View style={{ height: 12 }} />
+      <Button title="Konto" onPress={() => navigation.push("Account")} />
       <Button title="Logga ut" onPress={onSignOut} />
     </View>
   );

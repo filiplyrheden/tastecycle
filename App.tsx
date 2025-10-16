@@ -6,6 +6,7 @@ import MenuScreen from "./src/screens/MenuScreen";
 import RecipeScreen from "./src/screens/RecipesScreen";
 import DebugScreen from "./src/screens/DebugScreen";
 import ExampleScreen from "./src/screens/ExampleScreen";
+import AccountScreen from "./src/screens/AccountScreen";
 import { AuthProvider, useAuth } from "./src/lib/Authprovider";
 AuthProvider;
 
@@ -19,6 +20,7 @@ export type AppStackParamList = {
   Debug: undefined;
   Menu: undefined;
   Recipe: { title?: string } | undefined;
+  Account: undefined;
 };
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -39,6 +41,7 @@ function MainAppNavigator() {
       <AppStack.Screen name="Example" component={ExampleScreen} />
       <AppStack.Screen name="Debug" component={DebugScreen} />
       <AppStack.Screen name="Recipe" component={RecipeScreen} />
+      <AppStack.Screen name="Account" component={AccountScreen} />
     </AppStack.Navigator>
   );
 }
