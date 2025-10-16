@@ -10,7 +10,6 @@ import AccountScreen from "./src/screens/AccountScreen";
 import { AuthProvider, useAuth } from "./src/lib/Authprovider";
 AuthProvider;
 
-// Separata typer per stack (valfritt men tydligt)
 export type AuthStackParamList = {
   Login: undefined;
 };

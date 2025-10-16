@@ -13,9 +13,11 @@ import { supabase } from "../lib/supabase";
 type Props = NativeStackScreenProps<AppStackParamList, "Menu">;
 
 const items = [
-  { id: "1", title: "Spaghetti & köttfärssås" },
-  { id: "2", title: "Kycklinggryta" },
-  { id: "3", title: "Vegolasagne" },
+  { id: "1", day: "Måndag", title: "Spaghetti & köttfärssås" },
+  { id: "2", day: "Tisdag", title: "Kycklinggryta" },
+  { id: "3", day: "Onsdag", title: "Vegolasagne" },
+  { id: "4", day: "Torsdag", title: "Pannkakor" },
+  { id: "5", day: "Fredag", title: "Tacos" },
 ];
 
 async function onSignOut() {
@@ -39,7 +41,8 @@ export default function MenuScreen({ navigation }: Props) {
             style={styles.card}
             onPress={() => navigation.push("Recipe", { title: item.title })}
           >
-            <Text style={styles.cardTitle}>{item.title}</Text>
+            <Text style={styles.cardTitle}>{item.day}</Text>
+            <Text>{item.title}</Text>
             <Text style={styles.cardHint}>Tryck för recept</Text>
           </TouchableOpacity>
         )}
@@ -48,6 +51,8 @@ export default function MenuScreen({ navigation }: Props) {
       />
 
       <View style={{ height: 12 }} />
+      <Button title="Get AI-suggestion" />
+      <Button title="Generate shopping list" />
       <Button title="Konto" onPress={() => navigation.push("Account")} />
       <Button title="Logga ut" onPress={onSignOut} />
     </View>
