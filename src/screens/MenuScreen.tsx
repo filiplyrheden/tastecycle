@@ -26,6 +26,10 @@ export default function MenuScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Menu</Text>
+      <Button
+        title="Nytt recept +"
+        onPress={() => navigation.push("Example")}
+      />
 
       <FlatList
         data={items}
