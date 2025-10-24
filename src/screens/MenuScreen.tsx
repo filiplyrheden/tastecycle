@@ -16,21 +16,12 @@ import { generateWeeklyMenu, Recipe } from "../services/recipesService";
 
 type Props = NativeStackScreenProps<AppStackParamList, "Menu">;
 
-const items = [
-  { id: "1", day: "Måndag", title: "Spaghetti & köttfärssås" },
-  { id: "2", day: "Tisdag", title: "Kycklinggryta" },
-  { id: "3", day: "Onsdag", title: "Vegolasagne" },
-  { id: "4", day: "Torsdag", title: "Pannkakor" },
-  { id: "5", day: "Fredag", title: "Tacos" },
-];
-
 async function onSignOut() {
   await await supabase.auth.signOut();
 }
 
 export default function MenuScreen({ navigation }: Props) {
   const { user } = useAuth();
-  const userId = user?.id;
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<Recipe[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +32,7 @@ export default function MenuScreen({ navigation }: Props) {
       setError(null);
       setLoading(true);
       const next = await generateWeeklyMenu(user.id);
-      setItems(next); // rendera veckomenyn
+      setItems(next);
     } catch (e: any) {
       console.error(e);
       setError(e?.message ?? "Något gick fel. Försök igen.");
@@ -100,11 +91,6 @@ export default function MenuScreen({ navigation }: Props) {
               <Text style={{ fontSize: 16, fontWeight: "600" }}>
                 {item.title}
               </Text>
-              {item.ingredients ? (
-                <Text numberOfLines={2} style={{ opacity: 0.8 }}>
-                  {item.ingredients}
-                </Text>
-              ) : null}
             </View>
           )}
         />
