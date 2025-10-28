@@ -13,6 +13,7 @@ import { AppStackParamList } from "../../App";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/Authprovider";
 import { generateWeeklyMenu, Recipe } from "../services/recipesService";
+import { saveWeeklyMenuLocal, toWeeklyMenuJSON } from "../utils/menuStorage";
 
 type Props = NativeStackScreenProps<AppStackParamList, "Menu">;
 
@@ -31,8 +32,26 @@ export default function MenuScreen({ navigation }: Props) {
     try {
       setError(null);
       setLoading(true);
+
       const next = await generateWeeklyMenu(user.id);
       setItems(next);
+
+      // 🧾 Bygg JSON och spara lokalt
+      const menuJson = toWeeklyMenuJSON(
+        next.map((r) => ({
+          id: r.id,
+          title: r.title,
+          ingredients:
+            typeof r.ingredients === "string"
+              ? [r.ingredients]
+              : r.ingredients ?? [],
+          servings: 4,
+        })),
+        user.id
+      );
+
+      const savedPath = await saveWeeklyMenuLocal(menuJson);
+      console.log("✅ Veckomeny sparad:", savedPath);
     } catch (e: any) {
       console.error(e);
       setError(e?.message ?? "Något gick fel. Försök igen.");
