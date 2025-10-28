@@ -14,8 +14,15 @@ import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/Authprovider";
 import { generateWeeklyMenu, Recipe } from "../services/recipesService";
 import { saveWeeklyMenuLocal, toWeeklyMenuJSON } from "../utils/menuStorage";
+import { replaceRecipesWithAI } from "../services/aiMenuService";
 
 type Props = NativeStackScreenProps<AppStackParamList, "Menu">;
+
+type DisplayRecipe = {
+  id: string;
+  title: string;
+  ingredients?: string[];
+};
 
 async function onSignOut() {
   await await supabase.auth.signOut();
@@ -24,8 +31,15 @@ async function onSignOut() {
 export default function MenuScreen({ navigation }: Props) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState<Recipe[]>([]);
+  const [items, setItems] = useState<DisplayRecipe[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+
+  const toggleSelect = (day: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  };
 
   const onGenerate = useCallback(async () => {
     if (!user?.id) return;
@@ -34,9 +48,19 @@ export default function MenuScreen({ navigation }: Props) {
       setLoading(true);
 
       const next = await generateWeeklyMenu(user.id);
-      setItems(next);
+      setItems(
+        next.map((r) => ({
+          id: r.id,
+          title: r.title,
+          ingredients: r.ingredients
+            ? typeof r.ingredients === "string"
+              ? [r.ingredients]
+              : r.ingredients
+            : [],
+        }))
+      );
 
-      // 🧾 Bygg JSON och spara lokalt
+      // Bygg JSON och spara lokalt
       const menuJson = toWeeklyMenuJSON(
         next.map((r) => ({
           id: r.id,
@@ -67,7 +91,6 @@ export default function MenuScreen({ navigation }: Props) {
         title="Nytt recept +"
         onPress={() => navigation.push("Example")}
       />
-
       <View style={{ flex: 1, padding: 16 }}>
         <Text style={{ fontSize: 22, fontWeight: "600", marginBottom: 8 }}>
           Veckomeny
@@ -96,27 +119,42 @@ export default function MenuScreen({ navigation }: Props) {
         )}
 
         <FlatList
-          style={{ marginTop: 12 }}
           data={items}
           keyExtractor={(r) => r.id}
-          renderItem={({ item }) => (
-            <View
-              style={{
-                paddingVertical: 10,
-                borderBottomWidth: 1,
-                borderColor: "#eee",
-              }}
-            >
-              <Text style={{ fontSize: 16, fontWeight: "600" }}>
-                {item.title}
-              </Text>
-            </View>
-          )}
+          renderItem={({ item, index }) => {
+            const isSelected = selectedDays.includes(item.id);
+            return (
+              <TouchableOpacity
+                onPress={() => toggleSelect(item.id)}
+                style={{
+                  paddingVertical: 10,
+                  borderBottomWidth: 1,
+                  borderColor: "#eee",
+                  backgroundColor: isSelected ? "#def" : "transparent",
+                }}
+              >
+                <Text style={{ fontSize: 16, fontWeight: "600" }}>
+                  {item.title}
+                </Text>
+              </TouchableOpacity>
+            );
+          }}
         />
       </View>
-
       <View style={{ height: 12 }} />
-      <Button title="Get AI-suggestion" />
+      <Button
+        title="Byt ut markerade rätter med AI"
+        onPress={async () => {
+          try {
+            const updated = await replaceRecipesWithAI(selectedDays);
+            setItems(updated.days.map((d) => ({ id: d.id, title: d.title })));
+            console.log("🎉 Meny uppdaterad med AI");
+          } catch (err) {
+            console.error("AI-fel:", err);
+          }
+        }}
+        disabled={selectedDays.length === 0}
+      />{" "}
       <Button title="Generate shopping list" />
       <Button title="Konto" onPress={() => navigation.push("Account")} />
       <Button title="Logga ut" onPress={onSignOut} />
