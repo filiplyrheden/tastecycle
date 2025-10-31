@@ -61,7 +61,9 @@ export default function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
-        <RootNavigator />
+        <GluestackUIProvider>
+          <RootNavigator />
+        </GluestackUIProvider>
       </NavigationContainer>
     </AuthProvider>
   );
