@@ -98,6 +98,7 @@ export default function MenuScreen({ navigation }: Props) {
         size="md"
         action="positive"
         onPress={() => navigation.push("Example")}
+        style={{ borderRadius: 10 }}
       >
         <ButtonText>Nytt recept +</ButtonText>
       </Button>
@@ -106,7 +107,13 @@ export default function MenuScreen({ navigation }: Props) {
           Veckomeny
         </Text>
 
-        <Button onPress={onGenerate} disabled={loading || !user?.id}>
+        <Button
+          variant="outline"
+          size="md"
+          action="primary"
+          onPress={onGenerate}
+          disabled={loading || !user?.id}
+        >
           {loading ? (
             <ButtonSpinner />
           ) : (
@@ -155,6 +162,9 @@ export default function MenuScreen({ navigation }: Props) {
       </View>
       <View style={{ height: 12 }} />
       <Button
+        variant="outline"
+        size="md"
+        action="primary"
         onPress={async () => {
           try {
             const updated = await replaceRecipesWithAI(selectedDays);
@@ -169,15 +179,20 @@ export default function MenuScreen({ navigation }: Props) {
         <ButtonText>Byt ut markerade rätter med AI</ButtonText>
       </Button>
 
-      <Button>
+      <Button variant="outline" size="md" action="primary">
         <ButtonText>Generate shopping list</ButtonText>
       </Button>
 
-      <Button onPress={() => navigation.push("Account")}>
+      <Button
+        variant="outline"
+        size="md"
+        action="primary"
+        onPress={() => navigation.push("Account")}
+      >
         <ButtonText>Konto</ButtonText>
       </Button>
 
-      <Button onPress={onSignOut}>
+      <Button variant="outline" size="md" action="primary" onPress={onSignOut}>
         <ButtonText>Logga ut</ButtonText>
       </Button>
     </View>
