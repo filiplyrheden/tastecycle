@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
   ActivityIndicator,
   FlatList,
   TouchableOpacity,
@@ -15,6 +14,13 @@ import { useAuth } from "../lib/Authprovider";
 import { generateWeeklyMenu, Recipe } from "../services/recipesService";
 import { saveWeeklyMenuLocal, toWeeklyMenuJSON } from "../utils/menuStorage";
 import { replaceRecipesWithAI } from "../services/aiMenuService";
+import {
+  Button,
+  ButtonText,
+  ButtonSpinner,
+  ButtonIcon,
+  ButtonGroup,
+} from "@/components/ui/button";
 
 type Props = NativeStackScreenProps<AppStackParamList, "Menu">;
 
@@ -88,19 +94,25 @@ export default function MenuScreen({ navigation }: Props) {
     <View style={styles.container}>
       <Text style={styles.title}>Menu</Text>
       <Button
-        title="Nytt recept +"
+        variant="solid"
+        size="md"
+        action="positive"
         onPress={() => navigation.push("Example")}
-      />
+      >
+        <ButtonText>Nytt recept +</ButtonText>
+      </Button>
       <View style={{ flex: 1, padding: 16 }}>
         <Text style={{ fontSize: 22, fontWeight: "600", marginBottom: 8 }}>
           Veckomeny
         </Text>
 
-        <Button
-          title="Generera veckomeny"
-          onPress={onGenerate}
-          disabled={loading || !user?.id}
-        />
+        <Button onPress={onGenerate} disabled={loading || !user?.id}>
+          {loading ? (
+            <ButtonSpinner />
+          ) : (
+            <ButtonText>Generera veckomeny</ButtonText>
+          )}
+        </Button>
 
         {loading && (
           <View style={{ marginTop: 12 }}>
@@ -143,7 +155,6 @@ export default function MenuScreen({ navigation }: Props) {
       </View>
       <View style={{ height: 12 }} />
       <Button
-        title="Byt ut markerade rätter med AI"
         onPress={async () => {
           try {
             const updated = await replaceRecipesWithAI(selectedDays);
@@ -154,10 +165,21 @@ export default function MenuScreen({ navigation }: Props) {
           }
         }}
         disabled={selectedDays.length === 0}
-      />{" "}
-      <Button title="Generate shopping list" />
-      <Button title="Konto" onPress={() => navigation.push("Account")} />
-      <Button title="Logga ut" onPress={onSignOut} />
+      >
+        <ButtonText>Byt ut markerade rätter med AI</ButtonText>
+      </Button>
+
+      <Button>
+        <ButtonText>Generate shopping list</ButtonText>
+      </Button>
+
+      <Button onPress={() => navigation.push("Account")}>
+        <ButtonText>Konto</ButtonText>
+      </Button>
+
+      <Button onPress={onSignOut}>
+        <ButtonText>Logga ut</ButtonText>
+      </Button>
     </View>
   );
 }

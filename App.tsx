@@ -8,6 +8,9 @@ import DebugScreen from "./src/screens/DebugScreen";
 import ExampleScreen from "./src/screens/ExampleScreen";
 import AccountScreen from "./src/screens/AccountScreen";
 import { AuthProvider, useAuth } from "./src/lib/Authprovider";
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import "@/global.css";
+
 AuthProvider;
 
 export type AuthStackParamList = {
@@ -27,9 +30,11 @@ const AppStack = createNativeStackNavigator<AppStackParamList>();
 
 function AuthNavigator() {
   return (
-    <AuthStack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
-      <AuthStack.Screen name="Login" component={LoginScreen} />
-    </AuthStack.Navigator>
+    <GluestackUIProvider mode="dark">
+      <AuthStack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
+        <AuthStack.Screen name="Login" component={LoginScreen} />
+      </AuthStack.Navigator>
+    </GluestackUIProvider>
   );
 }
 
