@@ -1,6 +1,5 @@
 import { View, Text, TextInput, Alert } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useLayoutEffect } from "react";
 import { AppStackParamList } from "../../App";
 import { listMyRecipes, updateRecipe, deleteRecipe } from "../lib/recipes";
 import { useEffect, useState } from "react";
@@ -132,21 +131,14 @@ function RecipeRow({
   );
 }
 
-export default function RecipeCollectionScreen({ route, navigation }: Props) {
-  const [title, setTitle] = useState("");
-  const [ingredientsText, setIngredientsText] = useState("");
-  const [instructions, setInstructions] = useState("");
+export default function RecipeCollectionScreen({ navigation }: Props) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [adding, setAdding] = useState(false);
 
   async function load() {
-    setLoading(true);
     try {
       const data = await listMyRecipes();
       setRecipes(data as Recipe[]);
     } finally {
-      setLoading(false);
     }
   }
 
