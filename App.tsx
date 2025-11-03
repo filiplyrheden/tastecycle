@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./src/screens/LoginScreen";
 import MenuScreen from "./src/screens/MenuScreen";
-import RecipeScreen from "./src/screens/RecipesScreen";
+import RecipeScreen from "./src/screens/RecipeCollectionScreen";
 import DebugScreen from "./src/screens/DebugScreen";
 import ExampleScreen from "./src/screens/ExampleScreen";
 import AccountScreen from "./src/screens/AccountScreen";
