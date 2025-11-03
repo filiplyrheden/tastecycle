@@ -3,9 +3,9 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useLayoutEffect } from "react";
 import { AppStackParamList } from "../../App";
 
-type Props = NativeStackScreenProps<AppStackParamList, "Recipe">;
+type Props = NativeStackScreenProps<AppStackParamList, "RecipeCollection">;
 
-export default function RecipeScreen({ route, navigation }: Props) {
+export default function RecipeCollectionScreen({ route, navigation }: Props) {
   const title = route.params?.title ?? "Recipe";
 
   useLayoutEffect(() => {

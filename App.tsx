@@ -10,6 +10,7 @@ import AccountScreen from "./src/screens/AccountScreen";
 import { AuthProvider, useAuth } from "./src/lib/Authprovider";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
+import RecipeCollectionScreen from "./src/screens/RecipeCollectionScreen";
 
 AuthProvider;
 
@@ -21,7 +22,7 @@ export type AppStackParamList = {
   Example: undefined;
   Debug: undefined;
   Menu: undefined;
-  Recipe: { title?: string } | undefined;
+  RecipeCollection: { title?: string } | undefined;
   Account: undefined;
 };
 
@@ -44,7 +45,10 @@ function MainAppNavigator() {
       <AppStack.Screen name="Menu" component={MenuScreen} />
       <AppStack.Screen name="Example" component={ExampleScreen} />
       <AppStack.Screen name="Debug" component={DebugScreen} />
-      <AppStack.Screen name="Recipe" component={RecipeScreen} />
+      <AppStack.Screen
+        name="RecipeCollection"
+        component={RecipeCollectionScreen}
+      />
       <AppStack.Screen name="Account" component={AccountScreen} />
     </AppStack.Navigator>
   );

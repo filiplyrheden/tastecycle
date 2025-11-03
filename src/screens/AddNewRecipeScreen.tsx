@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { View, TextInput, Text, Alert } from "react-native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { createRecipe } from "../lib/recipes";
 import { Button, ButtonText } from "@/components/ui/button";
+import { AppStackParamList } from "../../App";
 
-export default function AddNewRecipeScreen() {
+type Props = NativeStackScreenProps<AppStackParamList, "Example">;
+
+export default function AddNewRecipeScreen({ navigation }: Props) {
   const [title, setTitle] = useState("");
   const [ingredientsText, setIngredientsText] = useState("");
   const [instructions, setInstructions] = useState("");
@@ -52,6 +56,9 @@ export default function AddNewRecipeScreen() {
         disabled={adding}
       >
         <ButtonText>{adding ? "Sparar…" : "Spara recept"}</ButtonText>
+      </Button>
+      <Button onPress={() => navigation.push("RecipeCollection")}>
+        <ButtonText>Visa mina recept</ButtonText>
       </Button>
     </View>
   );
