@@ -1,19 +1,12 @@
 import { useEffect, useState } from "react";
-import {
-  View,
-  TextInput,
-  Button,
-  FlatList,
-  Text,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
+import { View, TextInput, Text, Alert } from "react-native";
 import {
   createRecipe,
   listMyRecipes,
   updateRecipe,
   deleteRecipe,
 } from "../lib/recipes";
+import { Button, ButtonText } from "@/components/ui/button";
 
 type Recipe = {
   id: string;
@@ -96,12 +89,12 @@ function RecipeRow({
           multiline
         />
         <View style={{ flexDirection: "row", gap: 8 }}>
-          <Button
-            title={saving ? "Sparar…" : "Spara"}
-            onPress={onSave}
-            disabled={saving}
-          />
-          <Button title="Avbryt" onPress={() => setEditing(false)} />
+          <Button onPress={onSave} disabled={saving}>
+            <ButtonText>{saving ? "Sparar…" : "Spara"}</ButtonText>
+          </Button>
+          <Button onPress={() => setEditing(false)}>
+            <ButtonText>Avbryt</ButtonText>
+          </Button>
         </View>
       </View>
     );
@@ -119,14 +112,21 @@ function RecipeRow({
       >
         {item.instructions}
       </Text>
-      <Button
-        title={expanded ? "Visa mindre" : "Visa instruktioner"}
-        onPress={() => setExpanded((v) => !v)}
-      />
+
+      <Button onPress={() => setExpanded((v) => !v)}>
+        <ButtonText>
+          {expanded ? "Visa mindre" : "Visa instruktioner"}
+        </ButtonText>
+      </Button>
 
       <View style={{ flexDirection: "row", gap: 8, marginTop: 6 }}>
-        <Button title="Redigera" onPress={() => setEditing(true)} />
-        <Button title="Ta bort" color="#c0392b" onPress={onDelete} />
+        <Button onPress={() => setEditing(true)}>
+          <ButtonText>Redigera</ButtonText>
+        </Button>
+
+        <Button onPress={onDelete}>
+          <ButtonText>Ta bort</ButtonText>
+        </Button>
       </View>
     </View>
   );
@@ -134,8 +134,8 @@ function RecipeRow({
 
 export default function ExampleScreen() {
   const [title, setTitle] = useState("");
-  const [ingredientsText, setIngredientsText] = useState("500 g pasta\n1 lök");
-  const [instructions, setInstructions] = useState("Koka pastan…");
+  const [ingredientsText, setIngredientsText] = useState("");
+  const [instructions, setInstructions] = useState("");
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -189,24 +189,16 @@ export default function ExampleScreen() {
         onChangeText={setInstructions}
         multiline
       />
+
       <Button
-        title={adding ? "Sparar…" : "Spara recept"}
+        variant="solid"
+        size="md"
+        action="positive"
         onPress={onAdd}
         disabled={adding}
-      />
-
-      <View style={{ height: 12 }} />
-      <Text style={{ fontWeight: "700", fontSize: 18 }}>Mina recept</Text>
-      {loading ? (
-        <ActivityIndicator />
-      ) : (
-        <FlatList
-          data={recipes}
-          keyExtractor={(r) => r.id}
-          renderItem={({ item }) => <RecipeRow item={item} onChanged={load} />}
-          ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-        />
-      )}
+      >
+        <ButtonText>{adding ? "Sparar…" : "Spara recept"}</ButtonText>
+      </Button>
     </View>
   );
 }

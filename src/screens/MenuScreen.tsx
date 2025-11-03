@@ -11,16 +11,10 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../../App";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/Authprovider";
-import { generateWeeklyMenu, Recipe } from "../services/recipesService";
+import { generateWeeklyMenu } from "../services/recipesService";
 import { saveWeeklyMenuLocal, toWeeklyMenuJSON } from "../utils/menuStorage";
 import { replaceRecipesWithAI } from "../services/aiMenuService";
-import {
-  Button,
-  ButtonText,
-  ButtonSpinner,
-  ButtonIcon,
-  ButtonGroup,
-} from "@/components/ui/button";
+import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
 
 type Props = NativeStackScreenProps<AppStackParamList, "Menu">;
 
