@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./src/screens/LoginScreen";
 import MenuScreen from "./src/screens/MenuScreen";
-import RecipeScreen from "./src/screens/RecipeCollectionScreen";
+import RecipeScreen from "./src/screens/RecipeScreen";
 import DebugScreen from "./src/screens/DebugScreen";
 import ExampleScreen from "./src/screens/AddNewRecipeScreen";
 import AccountScreen from "./src/screens/AccountScreen";
@@ -24,6 +24,7 @@ export type AppStackParamList = {
   Menu: undefined;
   RecipeCollection: { title?: string } | undefined;
   Account: undefined;
+  Recipe: undefined;
 };
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -50,6 +51,7 @@ function MainAppNavigator() {
         component={RecipeCollectionScreen}
       />
       <AppStack.Screen name="Account" component={AccountScreen} />
+      <AppStack.Screen name="Recipe" component={RecipeScreen} />
     </AppStack.Navigator>
   );
 }
