@@ -24,7 +24,7 @@ export type AppStackParamList = {
   Menu: undefined;
   RecipeCollection: { title?: string } | undefined;
   Account: undefined;
-  Recipe: undefined;
+  Recipe: { id: string; title?: string };
 };
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();

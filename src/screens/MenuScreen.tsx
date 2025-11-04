@@ -134,13 +134,20 @@ export default function MenuScreen({ navigation }: Props) {
         <FlatList
           data={items}
           keyExtractor={(r) => r.id}
-          renderItem={({ item, index }) => {
+          renderItem={({ item }) => {
             const isSelected = selectedDays.includes(item.id);
             return (
               <TouchableOpacity
-                onPress={() => toggleSelect(item.id)}
+                activeOpacity={0.7}
+                onPress={() =>
+                  navigation.navigate("Recipe", {
+                    id: item.id,
+                    title: item.title, // valfritt, men snyggt för omedelbar titel
+                  })
+                }
+                onLongPress={() => toggleSelect(item.id)}
                 style={{
-                  paddingVertical: 10,
+                  paddingVertical: 12,
                   borderBottomWidth: 1,
                   borderColor: "#eee",
                   backgroundColor: isSelected ? "#def" : "transparent",
@@ -148,6 +155,9 @@ export default function MenuScreen({ navigation }: Props) {
               >
                 <Text style={{ fontSize: 16, fontWeight: "600" }}>
                   {item.title}
+                </Text>
+                <Text style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
+                  Tryck för detaljer • Långtryck för att markera
                 </Text>
               </TouchableOpacity>
             );

@@ -4,8 +4,8 @@ export type Recipe = {
   id: string;
   user_id: string;
   title: string;
-  ingredients?: string | null;
-  instructions?: string | null;
+  ingredients?: string | string[] | null;
+  instructions?: string | string[] | null;
   created_at: string;
   updated_at: string;
 };
@@ -110,4 +110,39 @@ export async function generateWeeklyMenu(userId: string): Promise<Recipe[]> {
   const { items } = await getNextFiveRecipes(userId);
   await advanceMenuIndex(userId, items.length || 0);
   return items;
+}
+
+export async function getRecipeById(id: string): Promise<Recipe | null> {
+  const { data, error } = await supabase
+    .from("recipes")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+  return data as Recipe;
+}
+
+export function parseListField(field?: unknown): string[] {
+  if (!field) return [];
+
+  if (Array.isArray(field)) {
+    return field.map((s) => String(s).trim()).filter(Boolean);
+  }
+
+  if (typeof field === "string") {
+    try {
+      const parsed = JSON.parse(field);
+      if (Array.isArray(parsed)) {
+        return parsed.map((s) => String(s).trim()).filter(Boolean);
+      }
+    } catch {}
+
+    return field
+      .split(/\r?\n|,|;/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+
+  return [];
 }
