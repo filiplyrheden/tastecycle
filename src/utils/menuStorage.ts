@@ -10,6 +10,7 @@ export type WeeklyMenuJSON = {
     id: string;
     title: string;
     ingredients?: string[] | null;
+    instructions?: string[] | null;
     servings?: number | null;
   }>;
   constraints?: {
@@ -71,7 +72,7 @@ export async function saveWeeklyMenuLocal(menu: WeeklyMenuJSON) {
   // Skriv JSON till filen
   file.write(JSON.stringify(menu, null, 2));
 
-  return file.uri; // ex: file:///.../Documents/menus/2025-W44.json
+  return file.uri;
 }
 
 export async function readWeeklyMenuLocal(week?: string) {

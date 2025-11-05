@@ -173,6 +173,7 @@ export default function MenuScreen({ navigation }: Props) {
           try {
             const updated = await replaceRecipesWithAI(selectedDays);
             setItems(updated.days.map((d) => ({ id: d.id, title: d.title })));
+
             console.log("🎉 Meny uppdaterad med AI");
           } catch (err) {
             console.error("AI-fel:", err);

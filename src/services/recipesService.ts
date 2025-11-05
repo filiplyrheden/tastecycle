@@ -146,3 +146,36 @@ export function parseListField(field?: unknown): string[] {
 
   return [];
 }
+
+export type RecipeDraft = {
+  user_id: string;
+  title: string;
+  ingredients?: string[];
+  instructions?: string[];
+};
+
+export async function createRecipe(draft: RecipeDraft): Promise<Recipe> {
+  const ingredientsStr =
+    draft.ingredients && draft.ingredients.length
+      ? draft.ingredients.join("\n")
+      : null;
+
+  const instructionsStr =
+    draft.instructions && draft.instructions.length
+      ? draft.instructions.join("\n")
+      : null;
+
+  const { data, error } = await supabase
+    .from("recipes")
+    .insert({
+      user_id: draft.user_id,
+      title: draft.title,
+      ingredients: ingredientsStr,
+      instructions: instructionsStr,
+    })
+    .select("*")
+    .single();
+
+  if (error) throw error;
+  return data as Recipe;
+}

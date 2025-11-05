@@ -4,8 +4,16 @@ import {
   saveWeeklyMenuLocal,
   WeeklyMenuJSON,
 } from "../utils/menuStorage";
+import { createRecipe, type RecipeDraft } from "./recipesService";
 
 const client = new OpenAI({ apiKey: process.env.EXPO_PUBLIC_OPENAI_KEY });
+
+type Replacement = {
+  old_id: string;
+  title: string;
+  ingredients?: string[];
+  instructions?: string[];
+};
 
 export async function replaceRecipesWithAI(selectedIds: string[]) {
   const menu = await readWeeklyMenuLocal();
@@ -13,41 +21,82 @@ export async function replaceRecipesWithAI(selectedIds: string[]) {
 
   const prompt = `
 Du är en smart köksassistent.
-Du får veckomenyn i JSON och ska byta ut rätterna vars id finns i "selected_ids" mot nya recept.
-Behåll struktur, portioner och kostrestriktioner. Returnera endast giltig JSON i samma format.
+Du får en veckomeny (JSON) och en lista med recipe-id:n "selected_ids".
+Skapa ENDAST ersättningar för dessa rätter.
 
-selected_ids: ${JSON.stringify(selectedIds)}
-  `;
+Krav för varje ersättning:
+- "old_id": id som ska ersättas (måste finnas i selected_ids)
+- "title": ny recepttitel
+- "ingredients": string[]
+- "instructions": string[]
+
+Returnera ENDAST giltig JSON med följande format:
+
+{
+  "replacements": [
+    { "old_id": "ID1", "title": "...", "ingredients": ["..."], "instructions": ["..."] },
+    ...
+  ]
+}
+`;
 
   const response = await client.responses.create({
-    model: "gpt-4.1-mini", // eller "gpt-4.1" / "gpt-5"
+    model: "gpt-4.1-mini",
     input: [
       {
         role: "system",
         content: "Returnera endast giltig JSON utan extra text.",
       },
       { role: "user", content: prompt },
-      { role: "user", content: JSON.stringify(menu) },
+      {
+        role: "user",
+        content: JSON.stringify({ menu, selected_ids: selectedIds }),
+      },
     ],
   });
 
   let jsonText = response.output_text ?? "";
-
-  // Rensa bort eventuella markdown-block eller icke-JSON-tecken
   jsonText = jsonText
     .replace(/```json/g, "")
     .replace(/```/g, "")
     .trim();
 
-  // Försök tolka JSON
-  let newMenu: WeeklyMenuJSON;
+  let parsed: { replacements: Replacement[] };
   try {
-    newMenu = JSON.parse(jsonText);
+    parsed = JSON.parse(jsonText);
   } catch (e) {
     console.error("❌ Kunde inte parsa JSON:", jsonText);
     throw e;
   }
 
-  await saveWeeklyMenuLocal(newMenu);
-  return newMenu;
+  const replacements = parsed?.replacements ?? [];
+  if (!Array.isArray(replacements) || replacements.length === 0) {
+    throw new Error("AI returnerade inga ersättningar.");
+  }
+
+  const mapping: Record<string, { id: string; title: string }> = {};
+
+  for (const rep of replacements) {
+    if (!selectedIds.includes(rep.old_id)) continue;
+
+    const draft: RecipeDraft = {
+      user_id: menu.user_id,
+      title: rep.title,
+      ingredients: rep.ingredients ?? [],
+      instructions: rep.instructions ?? [],
+    };
+
+    const created = await createRecipe(draft);
+    mapping[rep.old_id] = { id: created.id, title: created.title };
+  }
+  const updated: WeeklyMenuJSON = {
+    ...menu,
+    days: menu.days.map((d) => {
+      const m = mapping[d.id];
+      return m ? { ...d, id: m.id, title: m.title } : d;
+    }),
+  };
+
+  await saveWeeklyMenuLocal(updated);
+  return updated;
 }
