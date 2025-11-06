@@ -1,4 +1,12 @@
-import { View, Text, TextInput, Alert } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  RefreshControl,
+  TextInput,
+  Alert,
+} from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../../App";
 import { listMyRecipes, updateRecipe, deleteRecipe } from "../lib/recipes";
@@ -134,6 +142,7 @@ function RecipeRow({
 
 export default function RecipeCollectionScreen(_: Props) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   async function load() {
     const data = await listMyRecipes();
@@ -144,22 +153,47 @@ export default function RecipeCollectionScreen(_: Props) {
     load();
   }, []);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await load();
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
-    <View style={{ padding: 16, gap: 12 }}>
-      <View style={{ marginTop: 12 }}>
-        {recipes.map((r) => (
-          <View
-            key={r.id}
-            style={{
-              borderBottomWidth: 1,
-              borderBottomColor: "#eee",
-              paddingVertical: 8,
-            }}
-          >
-            <RecipeRow item={r} onChanged={load} />
-          </View>
-        ))}
-      </View>
-    </View>
+    <FlatList
+      style={styles.list} // gör listan fullhöjd
+      contentContainerStyle={styles.content} // padding/gap här
+      data={recipes}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <View style={styles.rowDivider}>
+          <RecipeRow item={item} onChanged={load} />
+        </View>
+      )}
+      ListEmptyComponent={
+        <View style={styles.emptyWrap}>
+          <Text style={styles.emptyText}>Inga recept ännu.</Text>
+        </View>
+      }
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      keyboardShouldPersistTaps="handled"
+    />
   );
 }
+
+const styles = StyleSheet.create({
+  list: { flex: 1 }, // viktigt för att enable:a scroll
+  content: { padding: 16, gap: 12 }, // ersätter din ytter-View
+  rowDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    paddingVertical: 8,
+  },
+  emptyWrap: { paddingTop: 40, alignItems: "center" },
+  emptyText: { color: "#666" },
+});
