@@ -5,8 +5,6 @@ import LoginScreen from "./src/screens/LoginScreen";
 import MenuScreen from "./src/screens/MenuScreen";
 import RecipeScreen from "./src/screens/RecipeScreen";
 import DebugScreen from "./src/screens/DebugScreen";
-import ExampleScreen from "./src/screens/AddNewRecipeScreen";
-import AccountScreen from "./src/screens/AccountScreen";
 import { AuthProvider, useAuth } from "./src/lib/Authprovider";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
