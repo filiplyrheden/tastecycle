@@ -22,7 +22,7 @@ export async function replaceRecipesWithAI(selectedIds: string[]) {
   const prompt = `
 Du är en smart köksassistent.
 Du får en veckomeny (JSON) och en lista med recipe-id:n "selected_ids".
-Skapa ENDAST ersättningar för dessa rätter.
+Skapa ENDAST ersättningar för dessa rätter. Ersättningsrätterna ska vara i samma stil och samma komplexitet som recepten i veckomenyn, men komplettera dem så att det inte blir för likt.
 
 Krav för varje ersättning:
 - "old_id": id som ska ersättas (måste finnas i selected_ids)
