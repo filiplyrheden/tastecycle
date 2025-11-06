@@ -188,15 +188,6 @@ export default function MenuScreen({ navigation }: Props) {
         <ButtonText>Generate shopping list</ButtonText>
       </Button>
 
-      <Button
-        variant="outline"
-        size="md"
-        action="primary"
-        onPress={() => navigation.push("Account")}
-      >
-        <ButtonText>Konto</ButtonText>
-      </Button>
-
       <Button variant="outline" size="md" action="primary" onPress={onSignOut}>
         <ButtonText>Logga ut</ButtonText>
       </Button>
