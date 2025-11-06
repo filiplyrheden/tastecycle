@@ -4,6 +4,7 @@ import { AppStackParamList } from "../../App";
 import { listMyRecipes, updateRecipe, deleteRecipe } from "../lib/recipes";
 import { useEffect, useState } from "react";
 import { Button, ButtonText } from "@/components/ui/button";
+import { parseListField } from "../services/recipesService";
 
 type Props = NativeStackScreenProps<AppStackParamList, "RecipeCollection">;
 
@@ -25,8 +26,8 @@ function RecipeRow({
   const [editing, setEditing] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [title, setTitle] = useState(item.title);
-  const [ingredientsText, setIngredientsText] = useState(
-    item.ingredients?.join("\n") ?? ""
+  const [ingredientsText, setIngredientsText] = useState<string>(
+    parseListField(item.ingredients).join("\n")
   );
   const [instructions, setInstructions] = useState(item.instructions ?? "");
   const [saving, setSaving] = useState(false);
@@ -102,7 +103,7 @@ function RecipeRow({
   return (
     <View style={{ paddingVertical: 8 }}>
       <Text style={{ fontWeight: "600" }}>{item.title}</Text>
-      {item.ingredients?.map((ing, i) => (
+      {parseListField(item.ingredients).map((ing, i) => (
         <Text key={i}>• {ing}</Text>
       ))}
       <Text
