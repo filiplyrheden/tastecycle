@@ -30,7 +30,7 @@ function RecipeRow({
   );
   const [instructions, setInstructions] = useState(item.instructions ?? "");
   const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const [, setDeleting] = useState(false);
 
   async function onSave() {
     try {
@@ -131,15 +131,12 @@ function RecipeRow({
   );
 }
 
-export default function RecipeCollectionScreen({ navigation }: Props) {
+export default function RecipeCollectionScreen(_: Props) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   async function load() {
-    try {
-      const data = await listMyRecipes();
-      setRecipes(data as Recipe[]);
-    } finally {
-    }
+    const data = await listMyRecipes();
+    setRecipes(data as Recipe[]);
   }
 
   useEffect(() => {
