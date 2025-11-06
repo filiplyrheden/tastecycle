@@ -34,6 +34,8 @@ export default function MenuScreen({ navigation }: Props) {
   const [items, setItems] = useState<DisplayRecipe[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
+  const busy = loading || aiLoading;
 
   const toggleSelect = (day: string) => {
     setSelectedDays((prev) =>
@@ -88,6 +90,18 @@ export default function MenuScreen({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
+      {aiLoading && (
+        <View style={styles.overlay} pointerEvents="auto">
+          <View style={styles.overlayCard}>
+            <ActivityIndicator size="large" />
+            <Text style={styles.overlayText}>AI genererar nya recept…</Text>
+            <Text style={{ color: "#ccc", marginTop: 4, fontSize: 12 }}>
+              Det kan ta några sekunder
+            </Text>
+          </View>
+        </View>
+      )}
+
       <Text style={styles.title}>Menu</Text>
       <Button
         variant="solid"
@@ -98,7 +112,10 @@ export default function MenuScreen({ navigation }: Props) {
       >
         <ButtonText>Nytt recept +</ButtonText>
       </Button>
-      <View style={{ flex: 1, padding: 16 }}>
+      <View
+        style={{ flex: 1, padding: 16 }}
+        pointerEvents={busy ? "none" : "auto"}
+      >
         <Text style={{ fontSize: 22, fontWeight: "600", marginBottom: 8 }}>
           Veckomeny
         </Text>
@@ -108,7 +125,7 @@ export default function MenuScreen({ navigation }: Props) {
           size="md"
           action="primary"
           onPress={onGenerate}
-          disabled={loading || !user?.id}
+          disabled={busy || !user?.id}
         >
           {loading ? (
             <ButtonSpinner />
@@ -187,18 +204,34 @@ export default function MenuScreen({ navigation }: Props) {
         size="md"
         action="primary"
         onPress={async () => {
+          setError(null);
+          setAiLoading(true);
           try {
             const updated = await replaceRecipesWithAI(selectedDays);
-            setItems(updated.days.map((d) => ({ id: d.id, title: d.title })));
-
+            setItems(
+              updated.days.map((d: any) => ({ id: d.id, title: d.title }))
+            );
+            setSelectedDays([]); // rensa val efter lyckad uppdatering
             console.log("🎉 Meny uppdaterad med AI");
-          } catch (err) {
+          } catch (err: any) {
             console.error("AI-fel:", err);
+            setError(
+              err?.message ?? "Kunde inte byta ut rätter med AI just nu."
+            );
+          } finally {
+            setAiLoading(false);
           }
         }}
-        disabled={selectedDays.length === 0}
+        disabled={selectedDays.length === 0 || busy}
       >
-        <ButtonText>Byt ut markerade rätter med AI</ButtonText>
+        {aiLoading ? (
+          <>
+            <ButtonSpinner />
+            <ButtonText style={{ marginLeft: 8 }}>Byter ut…</ButtonText>
+          </>
+        ) : (
+          <ButtonText>Byt ut markerade rätter med AI</ButtonText>
+        )}
       </Button>
 
       <Button
@@ -222,7 +255,7 @@ export default function MenuScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: { flex: 1, padding: 16, position: "relative" },
   title: {
     fontSize: 24,
     fontWeight: "700",
@@ -232,4 +265,25 @@ const styles = StyleSheet.create({
   card: { borderWidth: 1, borderColor: "#eee", borderRadius: 12, padding: 12 },
   cardTitle: { fontSize: 16, fontWeight: "600" },
   cardHint: { fontSize: 12, color: "#666", marginTop: 4 },
+  overlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.25)",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    zIndex: 10,
+  },
+  overlayCard: {
+    backgroundColor: "#111",
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    alignItems: "center",
+    maxWidth: 320,
+  },
+  overlayText: { color: "#fff", marginTop: 10, fontWeight: "600" },
 });
