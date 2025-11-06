@@ -118,7 +118,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
         <View style={styles.list}>
           {instructions.map((step, i) => (
             <Text key={i} style={styles.listItem}>
-              {i + 1}. {step}
+              {step}
             </Text>
           ))}
         </View>
