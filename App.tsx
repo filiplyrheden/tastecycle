@@ -24,7 +24,6 @@ export type AppStackParamList = {
   Menu: undefined;
   AddNewRecipe: undefined;
   RecipeCollection: { title?: string } | undefined;
-  Account: undefined;
   Recipe: { id: string; title?: string };
 };
 
@@ -51,7 +50,6 @@ function MainAppNavigator() {
         name="RecipeCollection"
         component={RecipeCollectionScreen}
       />
-      <AppStack.Screen name="Account" component={AccountScreen} />
       <AppStack.Screen name="Recipe" component={RecipeScreen} />
     </AppStack.Navigator>
   );
