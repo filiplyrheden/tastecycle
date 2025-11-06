@@ -201,6 +201,15 @@ export default function MenuScreen({ navigation }: Props) {
         <ButtonText>Byt ut markerade rätter med AI</ButtonText>
       </Button>
 
+      <Button
+        variant="outline"
+        size="md"
+        action="primary"
+        onPress={() => navigation.push("RecipeCollection")}
+      >
+        <ButtonText>Visa mina recept</ButtonText>
+      </Button>
+
       <Button variant="outline" size="md" action="primary">
         <ButtonText>Generate shopping list</ButtonText>
       </Button>
