@@ -10,6 +10,7 @@ import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
 import RecipeCollectionScreen from "./src/screens/RecipeCollectionScreen";
 import AddNewRecipeScreen from "./src/screens/AddNewRecipeScreen";
+import ShoppingListScreen from "./src/screens/ShoppingListScreen";
 
 AuthProvider;
 
@@ -23,6 +24,7 @@ export type AppStackParamList = {
   AddNewRecipe: undefined;
   RecipeCollection: { title?: string } | undefined;
   Recipe: { id: string; title?: string };
+  ShoppingList: { selectedIds?: string[] } | undefined;
 };
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -49,6 +51,7 @@ function MainAppNavigator() {
         component={RecipeCollectionScreen}
       />
       <AppStack.Screen name="Recipe" component={RecipeScreen} />
+      <AppStack.Screen name="ShoppingList" component={ShoppingListScreen} />
     </AppStack.Navigator>
   );
 }

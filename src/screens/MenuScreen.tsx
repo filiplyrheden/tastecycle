@@ -238,13 +238,23 @@ export default function MenuScreen({ navigation }: Props) {
         variant="outline"
         size="md"
         action="primary"
+        onPress={() =>
+          navigation.push("ShoppingList", {
+            selectedIds: selectedDays.length ? selectedDays : undefined,
+          })
+        }
+        disabled={busy}
+      >
+        <ButtonText>Skapa inköpslista</ButtonText>
+      </Button>
+
+      <Button
+        variant="outline"
+        size="md"
+        action="primary"
         onPress={() => navigation.push("RecipeCollection")}
       >
         <ButtonText>Visa mina recept</ButtonText>
-      </Button>
-
-      <Button variant="outline" size="md" action="primary">
-        <ButtonText>Generate shopping list</ButtonText>
       </Button>
 
       <Button variant="outline" size="md" action="primary" onPress={onSignOut}>
