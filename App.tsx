@@ -1,10 +1,8 @@
-// App.tsx
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./src/screens/LoginScreen";
 import MenuScreen from "./src/screens/MenuScreen";
 import RecipeScreen from "./src/screens/RecipeScreen";
-import DebugScreen from "./src/screens/DebugScreen";
 import { AuthProvider, useAuth } from "./src/lib/Authprovider";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
@@ -44,7 +42,6 @@ function MainAppNavigator() {
   return (
     <AppStack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
       <AppStack.Screen name="Menu" component={MenuScreen} />
-      <AppStack.Screen name="Debug" component={DebugScreen} />
       <AppStack.Screen name="AddNewRecipe" component={AddNewRecipeScreen} />
       <AppStack.Screen
         name="RecipeCollection"
