@@ -41,6 +41,8 @@ export default function MenuScreen({ navigation }: Props) {
     );
   };
 
+  const DAY_LABELS = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
+
   const onGenerate = useCallback(async () => {
     if (!user?.id) return;
     try {
@@ -132,9 +134,10 @@ export default function MenuScreen({ navigation }: Props) {
         )}
 
         <FlatList
-          data={items}
+          data={items.slice(0, 5)}
           keyExtractor={(r) => r.id}
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
+            const dayLabel = DAY_LABELS[index] ?? `Dag ${index + 1}`;
             const isSelected = selectedDays.includes(item.id);
             return (
               <TouchableOpacity
@@ -153,9 +156,23 @@ export default function MenuScreen({ navigation }: Props) {
                   backgroundColor: isSelected ? "#def" : "transparent",
                 }}
               >
+                {/* Veckodag */}
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontWeight: "700",
+                    color: "#666",
+                    marginBottom: 4,
+                  }}
+                >
+                  {dayLabel}
+                </Text>
+
+                {/* Rättens titel */}
                 <Text style={{ fontSize: 16, fontWeight: "600" }}>
                   {item.title}
                 </Text>
+
                 <Text style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
                   Tryck för detaljer • Långtryck för att markera
                 </Text>
