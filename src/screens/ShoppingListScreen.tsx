@@ -16,7 +16,6 @@ import {
   clearChecked,
   ShoppingItem,
 } from "../utils/shoppingList";
-import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
 
 type Props = NativeStackScreenProps<AppStackParamList, "ShoppingList">;
 
