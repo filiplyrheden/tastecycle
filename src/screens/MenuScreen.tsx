@@ -91,7 +91,7 @@ export default function MenuScreen({ navigation }: Props) {
         variant="solid"
         size="md"
         action="positive"
-        onPress={() => navigation.push("Example")}
+        onPress={() => navigation.push("AddNewRecipe")}
         style={{ borderRadius: 10 }}
       >
         <ButtonText>Nytt recept +</ButtonText>
@@ -142,7 +142,7 @@ export default function MenuScreen({ navigation }: Props) {
                 onPress={() =>
                   navigation.navigate("Recipe", {
                     id: item.id,
-                    title: item.title, // valfritt, men snyggt för omedelbar titel
+                    title: item.title,
                   })
                 }
                 onLongPress={() => toggleSelect(item.id)}

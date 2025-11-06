@@ -5,7 +5,7 @@ import { createRecipe } from "../lib/recipes";
 import { Button, ButtonText } from "@/components/ui/button";
 import { AppStackParamList } from "../../App";
 
-type Props = NativeStackScreenProps<AppStackParamList, "Example">;
+type Props = NativeStackScreenProps<AppStackParamList, "AddNewRecipe">;
 
 export default function AddNewRecipeScreen({ navigation }: Props) {
   const [title, setTitle] = useState("");
