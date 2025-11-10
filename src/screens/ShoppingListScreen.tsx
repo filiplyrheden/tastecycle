@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
@@ -16,8 +16,15 @@ import {
   clearChecked,
   ShoppingItem,
 } from "../utils/shoppingList";
+import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
 
 type Props = NativeStackScreenProps<AppStackParamList, "ShoppingList">;
+
+const SURFACE = "#FFFFFF";
+const BG = "#F2F2F7";
+const PRIMARY = "#007AFF";
+const TEXT_PRIMARY = "#1D1D1F";
+const TEXT_SECONDARY = "#8E8E93";
 
 export default function ShoppingListScreen({ navigation, route }: Props) {
   const [loading, setLoading] = useState(true);
@@ -44,7 +51,7 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
   };
 
   useEffect(() => {
-    navigation.setOptions({ title: "Inköpslista" });
+    navigation.setOptions({ title: "Shopping List" });
     load();
   }, []);
 
@@ -81,86 +88,177 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator />
-        <Text style={{ marginTop: 8 }}>Laddar inköpslista…</Text>
+      <View style={styles.centerFull}>
+        <ActivityIndicator size="large" color={PRIMARY} />
+        <Text style={[styles.muted, { marginTop: 8 }]}>
+          Loading shopping list…
+        </Text>
+        <Text style={[styles.muted, { fontSize: 12 }]}>
+          Please wait a moment
+        </Text>
       </View>
     );
   }
 
   if (items.length === 0) {
     return (
-      <View style={styles.container}>
-        <Text style={{ fontSize: 16, fontWeight: "600" }}>
-          Hittade inga ingredienser i veckomenyn.
+      <View style={styles.centerFull}>
+        <View style={styles.emptyCircle} />
+        <Text style={styles.title}>No Ingredients Found</Text>
+        <Text
+          style={[
+            styles.muted,
+            { textAlign: "center", marginHorizontal: 24, marginTop: 6 },
+          ]}
+        >
+          Generate a weekly menu first to automatically create your shopping
+          list.
         </Text>
-        <Text style={{ marginTop: 8, color: "#666" }}>
-          Generera först en veckomeny och försök igen.
-        </Text>
+        <Button
+          variant="solid"
+          action="primary"
+          size="md"
+          onPress={() => navigation.push("Menu")}
+          style={[styles.pill, { marginTop: 14, backgroundColor: PRIMARY }]}
+        >
+          <ButtonText>Generate Weekly Menu</ButtonText>
+        </Button>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.screen}>
+      <View style={styles.header}>
+        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={{ color: TEXT_PRIMARY, fontSize: 16 }}>‹</Text>
+        </Pressable>
+        <Text style={styles.headerTitle}>Shopping List</Text>
+        <View style={{ width: 40, height: 40 }} />
+      </View>
+
       <FlatList
-        style={{ marginTop: 12 }}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120 }}
         data={items}
         keyExtractor={(i) => i.id}
         ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
         renderItem={({ item }) => (
-          <TouchableOpacity
+          <Pressable
             onPress={() => toggle(item.id)}
-            activeOpacity={0.7}
-            style={styles.row}
+            style={({ pressed }) => [
+              styles.row,
+              pressed && { backgroundColor: "#F8FAFF" },
+            ]}
           >
-            <View
-              style={[styles.checkbox, item.checked && styles.checkboxChecked]}
-            >
-              {item.checked && <Text style={styles.checkmark}>✓</Text>}
-            </View>
             <Text
               style={[styles.rowLabel, item.checked && styles.rowLabelChecked]}
+              numberOfLines={2}
             >
               {item.name}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
       />
+
+      <View style={styles.footer}>
+        <View style={styles.footerRow}>
+          <Button
+            variant="solid"
+            size="md"
+            action="primary"
+            onPress={toggleAll}
+            disabled={bulkWorking || items.length === 0}
+            style={[styles.pill, styles.primaryBtn]}
+          >
+            {bulkWorking ? (
+              <>
+                <ButtonSpinner />
+                <ButtonText style={{ marginLeft: 8 }}>Working…</ButtonText>
+              </>
+            ) : (
+              <ButtonText>
+                {allChecked ? "Uncheck All" : "Mark all as checked"}
+              </ButtonText>
+            )}
+          </Button>
+        </View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  screen: { flex: 1, backgroundColor: SURFACE },
+  header: {
+    backgroundColor: SURFACE,
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEF0F2",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#F3F4F6",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: "800",
+    color: TEXT_PRIMARY,
+  },
+
   row: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderRadius: 12,
+    paddingHorizontal: 12,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#EEF0F2",
+    backgroundColor: "#FFFFFF",
   },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: "#6aa0ff",
+  rowLabel: { fontSize: 16, fontWeight: "600", color: TEXT_PRIMARY, flex: 1 },
+  rowLabelChecked: {
+    textDecorationLine: "line-through",
+    color: TEXT_SECONDARY,
+  },
+
+  footer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 16,
+    backgroundColor: SURFACE,
+    borderTopWidth: 1,
+    borderTopColor: "#EDEDED",
+  },
+  footerRow: { flexDirection: "row", gap: 10 },
+  pill: { borderRadius: 18, height: 52, flex: 1 },
+  primaryBtn: { backgroundColor: PRIMARY },
+  secondaryBtn: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
+
+  centerFull: {
+    flex: 1,
+    backgroundColor: SURFACE,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 12,
+    padding: 24,
   },
-  checkboxChecked: {
-    backgroundColor: "#6aa0ff",
+  title: { fontSize: 18, fontWeight: "800", color: TEXT_PRIMARY, marginTop: 6 },
+  muted: { color: TEXT_SECONDARY, fontSize: 14 },
+  emptyCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: BG,
   },
-  checkmark: {
-    color: "white",
-    fontWeight: "900",
-    fontSize: 14,
-    lineHeight: 14,
-  },
-  rowLabel: { fontSize: 16, fontWeight: "600" },
-  rowLabelChecked: { textDecorationLine: "line-through", color: "#8aa" },
 });
