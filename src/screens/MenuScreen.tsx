@@ -248,7 +248,7 @@ export default function MenuScreen({ navigation }: Props) {
         </Button>
 
         <Button
-          variant="outline"
+          variant="link"
           size="md"
           action="negative"
           onPress={onSignOut}
@@ -315,9 +315,7 @@ const styles = StyleSheet.create({
   disabledSoft: { opacity: 0.6 },
 
   signOutBtn: {
-    borderColor: "#FEE2E2",
-    backgroundColor: "#FFF1F1",
-    height: 48,
+    height: 28,
     borderRadius: 14,
   },
 
