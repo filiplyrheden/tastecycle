@@ -162,90 +162,101 @@ export default function MenuScreen({ navigation }: Props) {
       />
 
       <View style={styles.actions}>
-        <Button
-          variant="solid"
-          action="primary"
-          size="md"
-          onPress={onGenerate}
-          disabled={busy || !user?.id}
-          style={[styles.actionPrimary, styles.pillRadius]}
-        >
-          {loading ? (
-            <>
-              <ButtonSpinner />
-              <ButtonText style={{ marginLeft: 8 }}>Generating…</ButtonText>
-            </>
-          ) : (
-            <ButtonText>Generate Weekly Menu</ButtonText>
-          )}
-        </Button>
+        <View style={styles.buttonGrid}>
+          <Button
+            variant="solid"
+            action="primary"
+            size="md"
+            onPress={onGenerate}
+            disabled={busy || !user?.id}
+            style={[styles.actionPrimary, styles.pillRadius, styles.gridButton]}
+          >
+            {loading ? (
+              <>
+                <ButtonSpinner />
+                <ButtonText style={{ marginLeft: 8 }}>Generating…</ButtonText>
+              </>
+            ) : (
+              <ButtonText>Generate Menu</ButtonText>
+            )}
+          </Button>
 
-        <Button
-          variant="solid"
-          size="md"
-          onPress={async () => {
-            setError(null);
-            setAiLoading(true);
-            try {
-              const updated = await replaceRecipesWithAI(selectedDays);
-              setItems(
-                updated.days.map((d: any) => ({ id: d.id, title: d.title }))
-              );
-              setSelectedDays([]);
-            } catch (err: any) {
-              console.error("AI-fel:", err);
-              setError(
-                err?.message ?? "Kunde inte byta ut rätter med AI just nu."
-              );
-            } finally {
-              setAiLoading(false);
+          <Button
+            variant="solid"
+            size="md"
+            onPress={async () => {
+              setError(null);
+              setAiLoading(true);
+              try {
+                const updated = await replaceRecipesWithAI(selectedDays);
+                setItems(
+                  updated.days.map((d: any) => ({ id: d.id, title: d.title }))
+                );
+                setSelectedDays([]);
+              } catch (err: any) {
+                console.error("AI-fel:", err);
+                setError(
+                  err?.message ?? "Kunde inte byta ut rätter med AI just nu."
+                );
+              } finally {
+                setAiLoading(false);
+              }
+            }}
+            disabled={selectedDays.length === 0 || busy}
+            style={[
+              styles.actionAI,
+              styles.pillRadius,
+              styles.gridButton,
+              (selectedDays.length === 0 || busy) && styles.disabledSoft,
+            ]}
+          >
+            {aiLoading ? (
+              <>
+                <ButtonSpinner />
+                <ButtonText style={{ marginLeft: 8 }}>Replacing…</ButtonText>
+              </>
+            ) : (
+              <ButtonText>
+                {selectedDays.length > 0
+                  ? `Replace ${selectedDays.length} recipes with AI`
+                  : "Replace with AI"}
+              </ButtonText>
+            )}
+          </Button>
+
+          <Button
+            variant="outline"
+            size="md"
+            action="primary"
+            onPress={() =>
+              navigation.push("ShoppingList", {
+                selectedIds: selectedDays.length ? selectedDays : undefined,
+              })
             }
-          }}
-          disabled={selectedDays.length === 0 || busy}
-          style={[
-            styles.actionAI,
-            styles.pillRadius,
-            (selectedDays.length === 0 || busy) && styles.disabledSoft,
-          ]}
-        >
-          {aiLoading ? (
-            <>
-              <ButtonSpinner />
-              <ButtonText style={{ marginLeft: 8 }}>Replacing…</ButtonText>
-            </>
-          ) : (
-            <ButtonText>
-              {selectedDays.length > 0
-                ? `Replace ${selectedDays.length} Selected with AI`
-                : "Replace Selected with AI"}
-            </ButtonText>
-          )}
-        </Button>
+            disabled={busy}
+            style={[
+              styles.actionSecondary,
+              styles.pillRadius,
+              styles.gridButton,
+            ]}
+          >
+            <ButtonText>Create Shopping List</ButtonText>
+          </Button>
 
-        <Button
-          variant="outline"
-          size="md"
-          action="primary"
-          onPress={() =>
-            navigation.push("ShoppingList", {
-              selectedIds: selectedDays.length ? selectedDays : undefined,
-            })
-          }
-          disabled={busy}
-          style={[styles.actionSecondary, styles.pillRadius]}
-        >
-          <ButtonText>Create Shopping List</ButtonText>
-        </Button>
-
-        <Button
-          variant="outline"
-          size="md"
-          action="primary"
-          onPress={() => navigation.push("RecipeCollection")}
-          style={[styles.actionSecondary, styles.pillRadius]}
-        >
-          <ButtonText>View My Recipes</ButtonText>
-        </Button>
+          <Button
+            variant="outline"
+            size="md"
+            action="primary"
+            onPress={() => navigation.push("RecipeCollection")}
+            style={[
+              styles.actionSecondary,
+              styles.pillRadius,
+              styles.gridButton,
+            ]}
+          >
+            <ButtonText>My Recipes</ButtonText>
+          </Button>
+        </View>
 
         <Button
           variant="link"
@@ -308,11 +319,24 @@ const styles = StyleSheet.create({
   dot: { width: 8, height: 8, borderRadius: 4 },
 
   actions: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16, gap: 12 },
+  buttonGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  gridButton: {
+    flex: 1,
+    minWidth: "45%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   pillRadius: { borderRadius: 18, height: 56 },
   actionPrimary: { backgroundColor: PRIMARY },
   actionAI: { backgroundColor: ACCENT },
   actionSecondary: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
   disabledSoft: { opacity: 0.6 },
+
+  buttonTextStyle: { fontSize: 16 },
 
   signOutBtn: {
     height: 28,
