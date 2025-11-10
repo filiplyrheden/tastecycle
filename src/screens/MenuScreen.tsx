@@ -5,7 +5,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   FlatList,
-  TouchableOpacity,
+  Pressable,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../../App";
@@ -25,8 +25,12 @@ type DisplayRecipe = {
 };
 
 async function onSignOut() {
-  await await supabase.auth.signOut();
+  await supabase.auth.signOut();
 }
+
+const DAY_LABELS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"];
+const ACCENT = "#FF9500";
+const PRIMARY = "#007AFF";
 
 export default function MenuScreen({ navigation }: Props) {
   const { user } = useAuth();
@@ -37,13 +41,11 @@ export default function MenuScreen({ navigation }: Props) {
   const [aiLoading, setAiLoading] = useState(false);
   const busy = loading || aiLoading;
 
-  const toggleSelect = (day: string) => {
+  const toggleSelect = (id: string) => {
     setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   };
-
-  const DAY_LABELS = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
 
   const onGenerate = useCallback(async () => {
     if (!user?.id) return;
@@ -64,7 +66,6 @@ export default function MenuScreen({ navigation }: Props) {
         }))
       );
 
-      // Bygg JSON och spara lokalt
       const menuJson = toWeeklyMenuJSON(
         next.map((r) => ({
           id: r.id,
@@ -78,8 +79,7 @@ export default function MenuScreen({ navigation }: Props) {
         user.id
       );
 
-      const savedPath = await saveWeeklyMenuLocal(menuJson);
-      console.log("✅ Veckomeny sparad:", savedPath);
+      await saveWeeklyMenuLocal(menuJson);
     } catch (e: any) {
       console.error(e);
       setError(e?.message ?? "Något gick fel. Försök igen.");
@@ -89,211 +89,267 @@ export default function MenuScreen({ navigation }: Props) {
   }, [user?.id]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.screen}>
       {aiLoading && (
         <View style={styles.overlay} pointerEvents="auto">
           <View style={styles.overlayCard}>
             <ActivityIndicator size="large" />
-            <Text style={styles.overlayText}>AI genererar nya recept…</Text>
-            <Text style={{ color: "#ccc", marginTop: 4, fontSize: 12 }}>
-              Det kan ta några sekunder
-            </Text>
+            <Text style={styles.overlayTitle}>Generating with AI…</Text>
+            <Text style={styles.overlaySub}>This may take a moment</Text>
           </View>
         </View>
       )}
 
-      <Text style={styles.title}>Menu</Text>
-      <Button
-        variant="solid"
-        size="md"
-        action="positive"
-        onPress={() => navigation.push("AddNewRecipe")}
-        style={{ borderRadius: 10 }}
-      >
-        <ButtonText>Nytt recept +</ButtonText>
-      </Button>
-      <View
-        style={{ flex: 1, padding: 16 }}
-        pointerEvents={busy ? "none" : "auto"}
-      >
-        <Text style={{ fontSize: 22, fontWeight: "600", marginBottom: 8 }}>
-          Veckomeny
-        </Text>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Weekly Menu</Text>
+        <Button
+          variant="solid"
+          size="md"
+          action="primary"
+          onPress={() => navigation.push("AddNewRecipe")}
+          style={styles.pillButton}
+        >
+          <ButtonText>＋ New Recipe</ButtonText>
+        </Button>
+      </View>
+
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+      <FlatList
+        contentContainerStyle={styles.listContent}
+        data={items.slice(0, 5)}
+        keyExtractor={(r) => r.id}
+        ListEmptyComponent={
+          !loading ? (
+            <Text style={styles.emptyText}>
+              Inga recept ännu – lägg till ditt första recept!
+            </Text>
+          ) : null
+        }
+        renderItem={({ item, index }) => {
+          const isSelected = selectedDays.includes(item.id);
+          return (
+            <Pressable
+              onPress={() =>
+                navigation.navigate("Recipe", {
+                  id: item.id,
+                  title: item.title,
+                })
+              }
+              onLongPress={() => toggleSelect(item.id)}
+              style={({ pressed }) => [
+                styles.card,
+                isSelected && styles.cardSelected,
+                pressed && styles.cardPressed,
+              ]}
+            >
+              <View style={{ flex: 1, paddingRight: 16 }}>
+                <Text style={styles.dayLabel}>
+                  {DAY_LABELS[index] ?? `DAY ${index + 1}`}
+                </Text>
+                <Text style={styles.cardTitle}>{item.title}</Text>
+              </View>
+            </Pressable>
+          );
+        }}
+        ListFooterComponent={
+          loading ? (
+            <View style={{ paddingTop: 8 }}>
+              <ActivityIndicator />
+            </View>
+          ) : null
+        }
+      />
+
+      <View style={styles.actions}>
+        <Button
+          variant="solid"
+          action="primary"
+          size="md"
+          onPress={onGenerate}
+          disabled={busy || !user?.id}
+          style={[styles.actionPrimary, styles.pillRadius]}
+        >
+          {loading ? (
+            <>
+              <ButtonSpinner />
+              <ButtonText style={{ marginLeft: 8 }}>Generating…</ButtonText>
+            </>
+          ) : (
+            <ButtonText>Generate Weekly Menu</ButtonText>
+          )}
+        </Button>
+
+        <Button
+          variant="solid"
+          size="md"
+          onPress={async () => {
+            setError(null);
+            setAiLoading(true);
+            try {
+              const updated = await replaceRecipesWithAI(selectedDays);
+              setItems(
+                updated.days.map((d: any) => ({ id: d.id, title: d.title }))
+              );
+              setSelectedDays([]);
+            } catch (err: any) {
+              console.error("AI-fel:", err);
+              setError(
+                err?.message ?? "Kunde inte byta ut rätter med AI just nu."
+              );
+            } finally {
+              setAiLoading(false);
+            }
+          }}
+          disabled={selectedDays.length === 0 || busy}
+          style={[
+            styles.actionAI,
+            styles.pillRadius,
+            (selectedDays.length === 0 || busy) && styles.disabledSoft,
+          ]}
+        >
+          {aiLoading ? (
+            <>
+              <ButtonSpinner />
+              <ButtonText style={{ marginLeft: 8 }}>Replacing…</ButtonText>
+            </>
+          ) : (
+            <ButtonText>
+              {selectedDays.length > 0
+                ? `Replace ${selectedDays.length} Selected with AI`
+                : "Replace Selected with AI"}
+            </ButtonText>
+          )}
+        </Button>
 
         <Button
           variant="outline"
           size="md"
           action="primary"
-          onPress={onGenerate}
-          disabled={busy || !user?.id}
+          onPress={() =>
+            navigation.push("ShoppingList", {
+              selectedIds: selectedDays.length ? selectedDays : undefined,
+            })
+          }
+          disabled={busy}
+          style={[styles.actionSecondary, styles.pillRadius]}
         >
-          {loading ? (
-            <ButtonSpinner />
-          ) : (
-            <ButtonText>Generera veckomeny</ButtonText>
-          )}
+          <ButtonText>Create Shopping List</ButtonText>
         </Button>
 
-        {loading && (
-          <View style={{ marginTop: 12 }}>
-            <ActivityIndicator />
-          </View>
-        )}
+        <Button
+          variant="outline"
+          size="md"
+          action="primary"
+          onPress={() => navigation.push("RecipeCollection")}
+          style={[styles.actionSecondary, styles.pillRadius]}
+        >
+          <ButtonText>View My Recipes</ButtonText>
+        </Button>
 
-        {error && (
-          <Text style={{ color: "tomato", marginTop: 12 }}>{error}</Text>
-        )}
-
-        {!loading && items.length === 0 && !error && (
-          <Text style={{ marginTop: 12 }}>
-            Inga recept ännu – lägg till ditt första recept!
-          </Text>
-        )}
-
-        <FlatList
-          data={items.slice(0, 5)}
-          keyExtractor={(r) => r.id}
-          renderItem={({ item, index }) => {
-            const dayLabel = DAY_LABELS[index] ?? `Dag ${index + 1}`;
-            const isSelected = selectedDays.includes(item.id);
-            return (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() =>
-                  navigation.navigate("Recipe", {
-                    id: item.id,
-                    title: item.title,
-                  })
-                }
-                onLongPress={() => toggleSelect(item.id)}
-                style={{
-                  paddingVertical: 12,
-                  borderBottomWidth: 1,
-                  borderColor: "#eee",
-                  backgroundColor: isSelected ? "#def" : "transparent",
-                }}
-              >
-                {/* Veckodag */}
-                <Text
-                  style={{
-                    fontSize: 13,
-                    fontWeight: "700",
-                    color: "#666",
-                    marginBottom: 4,
-                  }}
-                >
-                  {dayLabel}
-                </Text>
-
-                {/* Rättens titel */}
-                <Text style={{ fontSize: 16, fontWeight: "600" }}>
-                  {item.title}
-                </Text>
-
-                <Text style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
-                  Tryck för detaljer • Långtryck för att markera
-                </Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
+        <Button
+          variant="outline"
+          size="md"
+          action="negative"
+          onPress={onSignOut}
+          style={styles.signOutBtn}
+        >
+          <ButtonText style={{ color: "#DC3D3D" }}>Sign Out</ButtonText>
+        </Button>
       </View>
-      <View style={{ height: 12 }} />
-      <Button
-        variant="outline"
-        size="md"
-        action="primary"
-        onPress={async () => {
-          setError(null);
-          setAiLoading(true);
-          try {
-            const updated = await replaceRecipesWithAI(selectedDays);
-            setItems(
-              updated.days.map((d: any) => ({ id: d.id, title: d.title }))
-            );
-            setSelectedDays([]); // rensa val efter lyckad uppdatering
-            console.log("🎉 Meny uppdaterad med AI");
-          } catch (err: any) {
-            console.error("AI-fel:", err);
-            setError(
-              err?.message ?? "Kunde inte byta ut rätter med AI just nu."
-            );
-          } finally {
-            setAiLoading(false);
-          }
-        }}
-        disabled={selectedDays.length === 0 || busy}
-      >
-        {aiLoading ? (
-          <>
-            <ButtonSpinner />
-            <ButtonText style={{ marginLeft: 8 }}>Byter ut…</ButtonText>
-          </>
-        ) : (
-          <ButtonText>Byt ut markerade rätter med AI</ButtonText>
-        )}
-      </Button>
-
-      <Button
-        variant="outline"
-        size="md"
-        action="primary"
-        onPress={() =>
-          navigation.push("ShoppingList", {
-            selectedIds: selectedDays.length ? selectedDays : undefined,
-          })
-        }
-        disabled={busy}
-      >
-        <ButtonText>Skapa inköpslista</ButtonText>
-      </Button>
-
-      <Button
-        variant="outline"
-        size="md"
-        action="primary"
-        onPress={() => navigation.push("RecipeCollection")}
-      >
-        <ButtonText>Visa mina recept</ButtonText>
-      </Button>
-
-      <Button variant="outline" size="md" action="primary" onPress={onSignOut}>
-        <ButtonText>Logga ut</ButtonText>
-      </Button>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, position: "relative" },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 12,
-    textAlign: "center",
+  screen: { flex: 1, backgroundColor: "#FFFFFF" },
+
+  header: {
+    paddingTop: 24,
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  card: { borderWidth: 1, borderColor: "#eee", borderRadius: 12, padding: 12 },
-  cardTitle: { fontSize: 16, fontWeight: "600" },
-  cardHint: { fontSize: 12, color: "#666", marginTop: 4 },
+  headerTitle: { fontSize: 28, fontWeight: "800", color: "#1D1D1F" },
+  pillButton: {
+    borderRadius: 9999,
+    paddingHorizontal: 16,
+    height: 40,
+    backgroundColor: PRIMARY,
+  },
+
+  listContent: { padding: 16, paddingBottom: 8, gap: 12 },
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#F1F1F4",
+    flexDirection: "row",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  cardPressed: { opacity: 0.95, transform: [{ scale: 0.99 }] },
+  cardSelected: { borderColor: "#1F7BFF55", backgroundColor: "#F5F9FF" },
+  dayLabel: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#8E8E93",
+    letterSpacing: 0.6,
+    marginBottom: 6,
+  },
+  cardTitle: { fontSize: 18, fontWeight: "700", color: "#1D1D1F" },
+  dot: { width: 8, height: 8, borderRadius: 4 },
+
+  actions: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16, gap: 12 },
+  pillRadius: { borderRadius: 18, height: 56 },
+  actionPrimary: { backgroundColor: PRIMARY },
+  actionAI: { backgroundColor: ACCENT },
+  actionSecondary: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
+  disabledSoft: { opacity: 0.6 },
+
+  signOutBtn: {
+    borderColor: "#FEE2E2",
+    backgroundColor: "#FFF1F1",
+    height: 48,
+    borderRadius: 14,
+  },
+
+  emptyText: { color: "#666", textAlign: "center", marginTop: 8 },
+  errorText: {
+    color: "#c00",
+    fontWeight: "600",
+    textAlign: "center",
+    marginTop: 8,
+    paddingHorizontal: 16,
+  },
+
   overlay: {
     position: "absolute",
     left: 0,
     right: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.25)",
+    backgroundColor: "rgba(0,0,0,0.35)",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
     zIndex: 10,
   },
   overlayCard: {
-    backgroundColor: "#111",
-    borderRadius: 12,
-    paddingVertical: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    paddingVertical: 20,
     paddingHorizontal: 18,
     alignItems: "center",
     maxWidth: 320,
   },
-  overlayText: { color: "#fff", marginTop: 10, fontWeight: "600" },
+  overlayTitle: { color: "#111", marginTop: 10, fontWeight: "700" },
+  overlaySub: { color: "#666", marginTop: 4, fontSize: 12 },
 });
