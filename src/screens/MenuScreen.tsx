@@ -135,7 +135,7 @@ export default function MenuScreen({ navigation }: Props) {
         <Button
           variant="solid"
           size="md"
-          action="primary"
+          action="positive"
           onPress={() => navigation.push("AddNewRecipe")}
           style={styles.pillButton}
         >
@@ -318,7 +318,6 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
     paddingHorizontal: 16,
     height: 40,
-    backgroundColor: PRIMARY,
   },
 
   listContent: { padding: 16, paddingBottom: 8, gap: 12 },
