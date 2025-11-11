@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
     marginBottom: 6,
   },
-  cardTitle: { fontSize: 18, fontWeight: "700", color: "#1D1D1F" },
+  cardTitle: { fontSize: 16, fontWeight: "600", color: "#1D1D1F" },
   dot: { width: 8, height: 8, borderRadius: 4 },
 
   actions: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16, gap: 12 },
