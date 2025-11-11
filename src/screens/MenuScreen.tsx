@@ -159,27 +159,34 @@ export default function MenuScreen({ navigation }: Props) {
         renderItem={({ item, index }) => {
           const isSelected = selectedDays.includes(item.id);
           return (
-            <Pressable
-              onPress={() =>
-                navigation.navigate("Recipe", {
-                  id: item.id,
-                  title: item.title,
-                })
-              }
-              onLongPress={() => toggleSelect(item.id)}
-              style={({ pressed }) => [
-                styles.card,
-                isSelected && styles.cardSelected,
-                pressed && styles.cardPressed,
-              ]}
-            >
-              <View style={{ flex: 1, paddingRight: 16 }}>
+            <View style={[styles.card, isSelected && styles.cardSelected]}>
+              {/* Klicka på titelområdet för att öppna detaljsidan */}
+              <Pressable
+                style={styles.titleArea}
+                onPress={() =>
+                  navigation.navigate("Recipe", {
+                    id: item.id,
+                    title: item.title,
+                  })
+                }
+              >
                 <Text style={styles.dayLabel}>
                   {DAY_LABELS[index] ?? `DAY ${index + 1}`}
                 </Text>
                 <Text style={styles.cardTitle}>{item.title}</Text>
-              </View>
-            </Pressable>
+              </Pressable>
+              {/* Checkbox */}
+              <Pressable
+                onPress={() => toggleSelect(item.id)}
+                hitSlop={8}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: isSelected }}
+                accessibilityLabel={`Välj ${item.title}`}
+                style={[styles.checkbox, isSelected && styles.checkboxChecked]}
+              >
+                {isSelected ? <Text style={styles.checkmark}>✓</Text> : null}
+              </Pressable>
+            </View>
           );
         }}
         ListFooterComponent={
@@ -253,9 +260,10 @@ export default function MenuScreen({ navigation }: Props) {
               </ButtonText>
             )}
           </Button>
-
+        </View>
+        <View style={styles.linkButtonRow}>
           <Button
-            variant="outline"
+            variant="link"
             size="md"
             action="primary"
             onPress={() =>
@@ -264,39 +272,27 @@ export default function MenuScreen({ navigation }: Props) {
               })
             }
             disabled={busy}
-            style={[
-              styles.actionSecondary,
-              styles.pillRadius,
-              styles.gridButton,
-            ]}
           >
             <ButtonText>Create Shopping List</ButtonText>
           </Button>
-
           <Button
-            variant="outline"
+            variant="link"
             size="md"
             action="primary"
             onPress={() => navigation.push("RecipeCollection")}
-            style={[
-              styles.actionSecondary,
-              styles.pillRadius,
-              styles.gridButton,
-            ]}
           >
             <ButtonText>My Recipes</ButtonText>
           </Button>
+          <Button
+            variant="link"
+            size="md"
+            action="negative"
+            onPress={onSignOut}
+            style={styles.signOutBtn}
+          >
+            <ButtonText style={{ color: "#DC3D3D" }}>Sign Out</ButtonText>
+          </Button>
         </View>
-
-        <Button
-          variant="link"
-          size="md"
-          action="negative"
-          onPress={onSignOut}
-          style={styles.signOutBtn}
-        >
-          <ButtonText style={{ color: "#DC3D3D" }}>Sign Out</ButtonText>
-        </Button>
       </View>
     </View>
   );
@@ -359,6 +355,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
+  linkButtonRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
   pillRadius: { borderRadius: 18, height: 56 },
   actionPrimary: { backgroundColor: PRIMARY },
   actionAI: { backgroundColor: ACCENT },
@@ -403,4 +406,30 @@ const styles = StyleSheet.create({
   },
   overlayTitle: { color: "#111", marginTop: 10, fontWeight: "700" },
   overlaySub: { color: "#666", marginTop: 4, fontSize: 12 },
+
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: "#F1F1F4",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+    backgroundColor: "#FFFFFF",
+  },
+  checkboxChecked: {
+    borderColor: "#007AFF",
+    backgroundColor: "#E6F0FF",
+  },
+  checkmark: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#007AFF",
+    lineHeight: 16,
+  },
+  titleArea: {
+    flex: 1,
+    paddingRight: 16,
+  },
 });
