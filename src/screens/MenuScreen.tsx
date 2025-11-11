@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,11 @@ import { AppStackParamList } from "../../App";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/Authprovider";
 import { generateWeeklyMenu } from "../services/recipesService";
-import { saveWeeklyMenuLocal, toWeeklyMenuJSON } from "../utils/menuStorage";
+import {
+  readWeeklyMenuLocal,
+  saveWeeklyMenuLocal,
+  toWeeklyMenuJSON,
+} from "../utils/menuStorage";
 import { replaceRecipesWithAI } from "../services/aiMenuService";
 import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
 
@@ -40,6 +44,25 @@ export default function MenuScreen({ navigation }: Props) {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
   const busy = loading || aiLoading;
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await readWeeklyMenuLocal(); // aktuell vecka
+        if (saved) {
+          setItems(
+            saved.days.map((d) => ({
+              id: d.id,
+              title: d.title,
+              ingredients: d.ingredients ?? [],
+            }))
+          );
+        }
+      } catch (e) {
+        // valfritt: logga
+      }
+    })();
+  }, []);
 
   const toggleSelect = (id: string) => {
     setSelectedDays((prev) =>
@@ -80,6 +103,13 @@ export default function MenuScreen({ navigation }: Props) {
       );
 
       await saveWeeklyMenuLocal(menuJson);
+      setItems(
+        menuJson.days.map((d) => ({
+          id: d.id,
+          title: d.title,
+          ingredients: d.ingredients ?? [],
+        }))
+      );
     } catch (e: any) {
       console.error(e);
       setError(e?.message ?? "Något gick fel. Försök igen.");
