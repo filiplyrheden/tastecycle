@@ -19,7 +19,7 @@ import {
 } from "../utils/menuStorage";
 import { replaceRecipesWithAI } from "../services/aiMenuService";
 import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
-import { WandSparkles, Utensils } from "lucide-react-native";
+import { WandSparkles, Utensils, Plus } from "lucide-react-native";
 
 type Props = NativeStackScreenProps<AppStackParamList, "Menu">;
 
@@ -59,9 +59,7 @@ export default function MenuScreen({ navigation }: Props) {
             }))
           );
         }
-      } catch (e) {
-        // valfritt: logga
-      }
+      } catch (e) {}
     })();
   }, []);
 
@@ -135,12 +133,15 @@ export default function MenuScreen({ navigation }: Props) {
         <Text style={styles.headerTitle}>Weekly Menu</Text>
         <Button
           variant="solid"
-          size="md"
+          size="xs"
           action="positive"
           onPress={() => navigation.push("AddNewRecipe")}
-          style={styles.pillButton}
+          style={[
+            styles.pillButton,
+            { paddingHorizontal: 0, paddingVertical: 0 },
+          ]}
         >
-          <ButtonText>＋ New Recipe</ButtonText>
+          <Plus size={24} color="#ffffff" strokeWidth={2.5} />
         </Button>
       </View>
 
@@ -320,9 +321,9 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 28, fontWeight: "800", color: "#1D1D1F" },
   pillButton: {
-    borderRadius: 9999,
-    paddingHorizontal: 16,
-    height: 40,
+    height: 48,
+    width: 48,
+    borderRadius: 100,
   },
 
   listContent: { padding: 16, paddingBottom: 8, gap: 12 },
