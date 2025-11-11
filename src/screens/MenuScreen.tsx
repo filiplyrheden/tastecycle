@@ -273,7 +273,9 @@ export default function MenuScreen({ navigation }: Props) {
             }
             disabled={busy}
           >
-            <ButtonText>Create Shopping List</ButtonText>
+            <View style={styles.underlinedText}>
+              <ButtonText>Create Shopping List</ButtonText>
+            </View>
           </Button>
           <Button
             variant="link"
@@ -281,7 +283,9 @@ export default function MenuScreen({ navigation }: Props) {
             action="primary"
             onPress={() => navigation.push("RecipeCollection")}
           >
-            <ButtonText>My Recipes</ButtonText>
+            <View style={styles.underlinedText}>
+              <ButtonText>My Recipes</ButtonText>
+            </View>
           </Button>
           <Button
             variant="link"
@@ -290,7 +294,9 @@ export default function MenuScreen({ navigation }: Props) {
             onPress={onSignOut}
             style={styles.signOutBtn}
           >
-            <ButtonText style={{ color: "#DC3D3D" }}>Sign Out</ButtonText>
+            <View style={styles.underlinedText}>
+              <ButtonText style={{ color: "#DC3D3D" }}>Sign Out</ButtonText>
+            </View>
           </Button>
         </View>
       </View>
@@ -361,6 +367,10 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-around",
     alignItems: "center",
+  },
+  underlinedText: {
+    borderBottomWidth: 1,
+    borderBottomColor: "currentColor",
   },
   pillRadius: { borderRadius: 18, height: 56 },
   actionPrimary: { backgroundColor: PRIMARY },
