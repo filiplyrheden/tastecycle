@@ -19,6 +19,7 @@ import {
 } from "../utils/menuStorage";
 import { replaceRecipesWithAI } from "../services/aiMenuService";
 import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
+import { WandSparkles, Utensils } from "lucide-react-native";
 
 type Props = NativeStackScreenProps<AppStackParamList, "Menu">;
 
@@ -208,6 +209,7 @@ export default function MenuScreen({ navigation }: Props) {
             disabled={busy || !user?.id}
             style={[styles.actionPrimary, styles.pillRadius, styles.gridButton]}
           >
+            <Utensils size={18} color="#ffffff" />
             {loading ? (
               <>
                 <ButtonSpinner />
@@ -247,6 +249,7 @@ export default function MenuScreen({ navigation }: Props) {
               (selectedDays.length === 0 || busy) && styles.disabledSoft,
             ]}
           >
+            <WandSparkles size={18} color="#ffffff" />
             {aiLoading ? (
               <>
                 <ButtonSpinner />
