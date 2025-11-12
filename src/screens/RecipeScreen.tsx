@@ -41,7 +41,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
       const data = await getRecipeById(id);
       setRecipe(data);
       navigation.setOptions({
-        title: data?.title ?? initialTitle ?? "Recipe",
+        title: "",
       });
     } catch (e: any) {
       setError(e?.message ?? "Kunde inte hämta receptet.");
@@ -153,9 +153,6 @@ export default function RecipeScreen({ route, navigation }: Props) {
   return (
     <View style={{ flex: 1, backgroundColor: SURFACE }}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={{ color: TEXT_PRIMARY, fontSize: 16 }}>‹</Text>
-        </Pressable>
         <Text style={styles.headerTitle} numberOfLines={2}>
           {recipe.title}
         </Text>
