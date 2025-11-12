@@ -123,7 +123,7 @@ export async function getRecipeById(id: string): Promise<Recipe | null> {
   return data as Recipe;
 }
 
-export function parseListField(field?: unknown): string[] {
+export function parseIngredientsField(field?: unknown): string[] {
   if (!field) return [];
 
   if (Array.isArray(field)) {
@@ -146,6 +146,32 @@ export function parseListField(field?: unknown): string[] {
 
   return [];
 }
+
+export function parseInstructionsField(field?: unknown): string[] {
+  if (!field) return [];
+
+  const stripBullet = (line: string) =>
+    line.replace(/^\s*(?:\d+(?:\.|\)|:)\s*|-|•)\s*/u, "").trim();
+
+  if (Array.isArray(field)) {
+    return field.map((s) => stripBullet(String(s))).filter(Boolean);
+  }
+
+  if (typeof field === "string") {
+    try {
+      const parsed = JSON.parse(field);
+      if (Array.isArray(parsed)) {
+        return parsed.map((s) => stripBullet(String(s))).filter(Boolean);
+      }
+    } catch {}
+
+    return field.split(/\r?\n/).map(stripBullet).filter(Boolean);
+  }
+
+  return [];
+}
+
+export const parseListField = parseIngredientsField;
 
 export type RecipeDraft = {
   user_id: string;
