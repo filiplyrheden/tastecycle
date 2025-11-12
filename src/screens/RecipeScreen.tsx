@@ -2,10 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
   ActivityIndicator,
   ScrollView,
   RefreshControl,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../../App";
@@ -15,6 +19,7 @@ import {
   parseInstructionsField,
   type Recipe,
 } from "../services/recipesService";
+import { updateRecipe } from "../lib/recipes";
 import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
 
 type Props = NativeStackScreenProps<AppStackParamList, "Recipe">;
@@ -26,7 +31,7 @@ const TEXT_PRIMARY = "#1D1D1F";
 const TEXT_SECONDARY = "#8E8E93";
 
 export default function RecipeScreen({ route, navigation }: Props) {
-  const { id, title: initialTitle } = route.params;
+  const { id } = route.params;
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,15 +39,20 @@ export default function RecipeScreen({ route, navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
 
+  // edit mode state
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [titleText, setTitleText] = useState("");
+  const [ingredientsText, setIngredientsText] = useState("");
+  const [instructionsText, setInstructionsText] = useState("");
+
   const load = async () => {
     setError(null);
     setLoading(true);
     try {
       const data = await getRecipeById(id);
       setRecipe(data);
-      navigation.setOptions({
-        title: "",
-      });
+      navigation.setOptions({ title: "" });
     } catch (e: any) {
       setError(e?.message ?? "Kunde inte hämta receptet.");
     } finally {
@@ -72,6 +82,60 @@ export default function RecipeScreen({ route, navigation }: Props) {
     () => parseInstructionsField(recipe?.instructions),
     [recipe?.instructions]
   );
+
+  const enterEdit = () => {
+    if (!recipe) return;
+    setTitleText(recipe.title ?? "");
+    setIngredientsText(ingredients.join("\n"));
+    setInstructionsText(instructions.join("\n"));
+    setEditing(true);
+  };
+
+  const cancelEdit = () => {
+    setEditing(false);
+    setSaving(false);
+  };
+
+  const toLines = (s: string) =>
+    s
+      .split("\n")
+      .map((x) => x.trim())
+      .filter(Boolean);
+
+  const onSave = async () => {
+    if (!recipe) return;
+    if (
+      !titleText.trim() ||
+      !ingredientsText.trim() ||
+      !instructionsText.trim()
+    ) {
+      Alert.alert("Saknas uppgifter", "Fyll i alla fält innan du sparar.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      await updateRecipe(recipe.id, {
+        title: titleText.trim(),
+        ingredients: toLines(ingredientsText),
+        instructions: instructionsText.trim(),
+      });
+
+      setRecipe({
+        ...recipe,
+        title: titleText.trim(),
+        ingredients: toLines(ingredientsText),
+        instructions: instructionsText.trim(),
+      });
+
+      setEditing(false);
+    } catch (err: any) {
+      Alert.alert("Kunde inte spara", err?.message ?? "Okänt fel");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -151,72 +215,164 @@ export default function RecipeScreen({ route, navigation }: Props) {
     );
   }
 
-  return (
-    <View style={{ flex: 1, backgroundColor: SURFACE }}>
+  const Content = (
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={[styles.content, { paddingBottom: 140 }]}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      keyboardShouldPersistTaps="handled"
+    >
       <View style={styles.header}>
-        <Text style={styles.headerTitle} numberOfLines={2}>
-          {recipe.title}
-        </Text>
-        <View style={{ width: 40, height: 40 }} />
+        {editing ? (
+          <TextInput
+            value={titleText}
+            onChangeText={setTitleText}
+            placeholder="Recipe title"
+            style={[styles.input, styles.titleInput]}
+            editable={!saving}
+          />
+        ) : (
+          <>
+            <Text style={styles.headerTitle} numberOfLines={2}>
+              {recipe.title}
+            </Text>
+            <View style={{ width: 40, height: 40 }} />
+          </>
+        )}
       </View>
 
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.content}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        <Text style={styles.sectionHeader}>Ingredients</Text>
-        {ingredients.length > 0 ? (
-          <View style={{ gap: 10 }}>
-            {ingredients.map((item, i) => (
-              <View key={i} style={styles.bulletRow}>
-                <View style={styles.bulletDot} />
-                <Text
-                  style={[styles.bodyText, styles.rowText]}
-                  textBreakStrategy="balanced"
-                  lineBreakStrategyIOS="hangul-word"
-                >
-                  {item}
-                </Text>
+      {/* INGREDIENTS */}
+      <Text style={styles.sectionHeader}>Ingredients</Text>
+      {editing ? (
+        <TextInput
+          value={ingredientsText}
+          onChangeText={setIngredientsText}
+          multiline
+          textAlignVertical="top"
+          placeholder={"Enter ingredients (one per line)"}
+          style={[styles.input, styles.textareaMedium]}
+          editable={!saving}
+        />
+      ) : ingredients.length > 0 ? (
+        <View style={{ gap: 10 }}>
+          {ingredients.map((item, i) => (
+            <View key={i} style={styles.bulletRow}>
+              <View style={styles.bulletDot} />
+              <Text
+                style={[styles.bodyText, styles.rowText]}
+                textBreakStrategy="balanced"
+                lineBreakStrategyIOS="hangul-word"
+              >
+                {item}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <Text style={[styles.muted, { fontStyle: "italic" }]}>
+          No ingredients provided.
+        </Text>
+      )}
+
+      <View style={styles.divider} />
+
+      <Text style={styles.sectionHeader}>Instructions</Text>
+      {editing ? (
+        <TextInput
+          value={instructionsText}
+          onChangeText={setInstructionsText}
+          multiline
+          textAlignVertical="top"
+          placeholder={"Enter cooking instructions step by step..."}
+          style={[styles.input, styles.textareaLarge]}
+          editable={!saving}
+        />
+      ) : instructions.length > 0 ? (
+        <View style={{ gap: 12 }}>
+          {instructions.map((step, i) => (
+            <View key={i} style={styles.stepRow}>
+              <View style={styles.stepBadge}>
+                <Text style={styles.stepBadgeText}>{i + 1}</Text>
               </View>
-            ))}
-          </View>
+              <Text
+                style={[styles.bodyText, styles.rowText]}
+                textBreakStrategy="balanced"
+                lineBreakStrategyIOS="hangul-word"
+              >
+                {step}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : (
+        <Text style={[styles.muted, { fontStyle: "italic" }]}>
+          No instructions provided.
+        </Text>
+      )}
+
+      <View style={{ height: 12 }} />
+      {/* Bottom action bar */}
+      <View style={styles.bottomBar}>
+        {editing ? (
+          <>
+            <Button
+              variant="solid"
+              action="primary"
+              size="md"
+              onPress={onSave}
+              disabled={saving}
+              style={[styles.pill, styles.primaryBtn]}
+            >
+              {saving ? (
+                <>
+                  <ButtonSpinner />
+                  <ButtonText style={{ marginLeft: 8 }}>Saving…</ButtonText>
+                </>
+              ) : (
+                <ButtonText>Save Changes</ButtonText>
+              )}
+            </Button>
+
+            <Button
+              variant="outline"
+              size="md"
+              action="primary"
+              onPress={cancelEdit}
+              disabled={saving}
+              style={[styles.pill, styles.secondaryBtn]}
+            >
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+          </>
         ) : (
-          <Text style={[styles.muted, { fontStyle: "italic" }]}>
-            No ingredients provided.
-          </Text>
+          <Button
+            variant="solid"
+            action="primary"
+            size="md"
+            onPress={enterEdit}
+            style={[styles.pill, styles.primaryBtn]}
+          >
+            <ButtonText>Edit Recipe</ButtonText>
+          </Button>
         )}
+      </View>
+    </ScrollView>
+  );
 
-        <View style={styles.divider} />
-
-        <Text style={styles.sectionHeader}>Instructions</Text>
-        {instructions.length > 0 ? (
-          <View style={{ gap: 12 }}>
-            {instructions.map((step, i) => (
-              <View key={i} style={styles.stepRow}>
-                <View style={styles.stepBadge}>
-                  <Text style={styles.stepBadgeText}>{i + 1}</Text>
-                </View>
-                <Text
-                  style={[styles.bodyText, styles.rowText]}
-                  textBreakStrategy="balanced"
-                  lineBreakStrategyIOS="hangul-word"
-                >
-                  {step}
-                </Text>
-              </View>
-            ))}
-          </View>
-        ) : (
-          <Text style={[styles.muted, { fontStyle: "italic" }]}>
-            No instructions provided.
-          </Text>
-        )}
-
-        <View style={{ height: 28 }} />
-      </ScrollView>
+  return (
+    <View style={{ flex: 1, backgroundColor: SURFACE }}>
+      {editing ? (
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+          {Content}
+        </KeyboardAvoidingView>
+      ) : (
+        Content
+      )}
     </View>
   );
 }
@@ -232,14 +388,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#F3F4F6",
-    alignItems: "center",
-    justifyContent: "center",
   },
   headerTitle: {
     flex: 1,
@@ -262,7 +410,31 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   bodyText: { fontSize: 16, lineHeight: 22, color: TEXT_PRIMARY },
+  rowText: {
+    flex: 1,
+    flexShrink: 1,
+    width: 0,
+    lineHeight: 22,
+  },
   muted: { color: TEXT_SECONDARY, fontSize: 14 },
+
+  input: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: TEXT_PRIMARY,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  titleInput: {
+    flex: 1,
+    fontWeight: "800",
+    fontSize: 20,
+  },
+  textareaMedium: { minHeight: 110 },
+  textareaLarge: { minHeight: 160 },
 
   bulletRow: {
     flexDirection: "row",
@@ -302,11 +474,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "800",
   },
-  rowText: {
-    flex: 1,
-    flexShrink: 1,
-    width: 0,
-    lineHeight: 22,
+
+  bottomBar: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 16,
+    backgroundColor: SURFACE,
+    borderTopWidth: 1,
+    borderTopColor: "#EDEDED",
+    gap: 10,
   },
 
   centerFull: {
@@ -340,4 +518,6 @@ const styles = StyleSheet.create({
   },
 
   pill: { borderRadius: 18, height: 52 },
+  primaryBtn: { backgroundColor: PRIMARY },
+  secondaryBtn: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
 });
