@@ -173,7 +173,13 @@ export default function RecipeScreen({ route, navigation }: Props) {
             {ingredients.map((item, i) => (
               <View key={i} style={styles.bulletRow}>
                 <View style={styles.bulletDot} />
-                <Text style={styles.bodyText}>{item}</Text>
+                <Text
+                  style={[styles.bodyText, styles.rowText]}
+                  textBreakStrategy="balanced"
+                  lineBreakStrategyIOS="hangul-word"
+                >
+                  {item}
+                </Text>
               </View>
             ))}
           </View>
@@ -193,7 +199,13 @@ export default function RecipeScreen({ route, navigation }: Props) {
                 <View style={styles.stepBadge}>
                   <Text style={styles.stepBadgeText}>{i + 1}</Text>
                 </View>
-                <Text style={styles.bodyText}>{step}</Text>
+                <Text
+                  style={[styles.bodyText, styles.rowText]}
+                  textBreakStrategy="balanced"
+                  lineBreakStrategyIOS="hangul-word"
+                >
+                  {step}
+                </Text>
               </View>
             ))}
           </View>
@@ -289,6 +301,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
     fontWeight: "800",
+  },
+  rowText: {
+    flex: 1,
+    flexShrink: 1,
+    width: 0,
+    lineHeight: 22,
   },
 
   centerFull: {
