@@ -12,7 +12,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../../App";
 import { listMyRecipes } from "../lib/recipes";
 import { Button, ButtonText } from "@/components/ui/button";
-import { Plus } from "lucide-react-native";
+import { Plus, ReceiptText } from "lucide-react-native";
 
 type Props = NativeStackScreenProps<AppStackParamList, "RecipeCollection">;
 
@@ -23,9 +23,6 @@ type Recipe = {
   instructions?: string | string[] | null;
   created_at?: string;
 };
-
-const BG = "#F2F2F7";
-const SURFACE = "#FFFFFF";
 
 export default function RecipeCollectionScreen({ navigation }: Props) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -64,9 +61,12 @@ export default function RecipeCollectionScreen({ navigation }: Props) {
         pressed && { opacity: 0.9, transform: [{ scale: 0.997 }] },
       ]}
     >
-      <Text style={styles.itemTitle} numberOfLines={2}>
-        {item.title}
-      </Text>
+      <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+        <ReceiptText size={24} color="#000" style={styles.icon} />
+        <Text style={styles.itemTitle} numberOfLines={2}>
+          {item.title}
+        </Text>
+      </View>
     </Pressable>
   );
 
@@ -118,7 +118,7 @@ export default function RecipeCollectionScreen({ navigation }: Props) {
         data={recipes}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+        ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -129,12 +129,12 @@ export default function RecipeCollectionScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: BG },
+  screen: { flex: 1 },
   list: { flex: 1 },
   listContent: { padding: 16, paddingTop: 8 },
 
   header: {
-    backgroundColor: SURFACE,
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 16,
     paddingTop: 18,
     paddingBottom: 12,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
 
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
   },
   itemTitle: {
     flex: 1,
@@ -175,6 +175,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#1D1D1F",
     lineHeight: 22,
+  },
+
+  icon: {
+    marginRight: 12,
+  },
+  itemSeparator: {
+    height: 36,
   },
 
   pill: { borderRadius: 16, height: 48 },

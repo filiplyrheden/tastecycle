@@ -162,7 +162,6 @@ export default function MenuScreen({ navigation }: Props) {
           const isSelected = selectedDays.includes(item.id);
           return (
             <View style={[styles.card, isSelected && styles.cardSelected]}>
-              {/* Klicka på titelområdet för att öppna detaljsidan */}
               <Pressable
                 style={styles.titleArea}
                 onPress={() =>
@@ -177,7 +176,7 @@ export default function MenuScreen({ navigation }: Props) {
                 </Text>
                 <Text style={styles.cardTitle}>{item.title}</Text>
               </Pressable>
-              {/* Checkbox */}
+
               <Pressable
                 onPress={() => toggleSelect(item.id)}
                 hitSlop={8}
