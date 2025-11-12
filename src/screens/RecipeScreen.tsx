@@ -6,13 +6,13 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
-  Pressable,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../../App";
 import {
   getRecipeById,
-  parseListField,
+  parseIngredientsField,
+  parseInstructionsField,
   type Recipe,
 } from "../services/recipesService";
 import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
@@ -64,11 +64,12 @@ export default function RecipeScreen({ route, navigation }: Props) {
   };
 
   const ingredients = useMemo(
-    () => parseListField(recipe?.ingredients),
+    () => parseIngredientsField(recipe?.ingredients),
     [recipe?.ingredients]
   );
+
   const instructions = useMemo(
-    () => parseListField(recipe?.instructions),
+    () => parseInstructionsField(recipe?.instructions),
     [recipe?.instructions]
   );
 
