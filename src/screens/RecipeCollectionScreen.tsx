@@ -12,6 +12,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppStackParamList } from "../../App";
 import { listMyRecipes } from "../lib/recipes";
 import { Button, ButtonText } from "@/components/ui/button";
+import { Plus } from "lucide-react-native";
 
 type Props = NativeStackScreenProps<AppStackParamList, "RecipeCollection">;
 
@@ -75,12 +76,18 @@ export default function RecipeCollectionScreen({ navigation }: Props) {
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
           <Text style={styles.headerTitle}>My Recipes</Text>
         </View>
-        <Pressable
+        <Button
+          variant="solid"
+          size="xs"
+          action="positive"
           onPress={() => navigation.push("AddNewRecipe")}
-          style={styles.addBtn}
+          style={[
+            styles.pillButton,
+            { paddingHorizontal: 0, paddingVertical: 0 },
+          ]}
         >
-          <Text style={{ color: "#fff", fontWeight: "700" }}>＋</Text>
-        </Pressable>
+          <Plus size={24} color="#ffffff" strokeWidth={2.5} />
+        </Button>
       </View>
 
       {loading ? (
@@ -138,14 +145,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   headerTitle: { fontSize: 32, fontWeight: "800", color: "#1D1D1F" },
-  backBtn: { padding: 8, borderRadius: 10 },
-  addBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#007AFF",
-    alignItems: "center",
-    justifyContent: "center",
+
+  pillButton: {
+    height: 48,
+    width: 48,
+    borderRadius: 100,
   },
 
   cardRow: {

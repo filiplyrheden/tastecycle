@@ -313,7 +313,6 @@ export default function RecipeScreen({ route, navigation }: Props) {
       )}
 
       <View style={{ height: 12 }} />
-      {/* Bottom action bar */}
       <View style={styles.bottomBar}>
         {editing ? (
           <>

@@ -49,7 +49,7 @@ export default function MenuScreen({ navigation }: Props) {
   useEffect(() => {
     (async () => {
       try {
-        const saved = await readWeeklyMenuLocal(); // aktuell vecka
+        const saved = await readWeeklyMenuLocal();
         if (saved) {
           setItems(
             saved.days.map((d) => ({
