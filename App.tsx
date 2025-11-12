@@ -41,14 +41,31 @@ function AuthNavigator() {
 function MainAppNavigator() {
   return (
     <AppStack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
-      <AppStack.Screen name="Menu" component={MenuScreen} />
-      <AppStack.Screen name="AddNewRecipe" component={AddNewRecipeScreen} />
+      <AppStack.Screen
+        name="Menu"
+        component={MenuScreen}
+        options={{ title: "" }}
+      />
+      <AppStack.Screen
+        name="AddNewRecipe"
+        component={AddNewRecipeScreen}
+        options={{ title: "" }}
+      />
       <AppStack.Screen
         name="RecipeCollection"
         component={RecipeCollectionScreen}
+        options={{ title: "" }}
       />
-      <AppStack.Screen name="Recipe" component={RecipeScreen} />
-      <AppStack.Screen name="ShoppingList" component={ShoppingListScreen} />
+      <AppStack.Screen
+        name="Recipe"
+        component={RecipeScreen}
+        options={{ title: "" }}
+      />
+      <AppStack.Screen
+        name="ShoppingList"
+        component={ShoppingListScreen}
+        options={{ title: "" }}
+      />
     </AppStack.Navigator>
   );
 }
