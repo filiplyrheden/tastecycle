@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -38,10 +38,9 @@ export default function RecipeScreen({ route, navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
 
-  // edit mode state
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false); // ⬅️ nytt
+  const [deleting, setDeleting] = useState(false);
   const [titleText, setTitleText] = useState("");
   const [ingredientsText, setIngredientsText] = useState("");
   const [instructionsText, setInstructionsText] = useState("");
@@ -73,15 +72,10 @@ export default function RecipeScreen({ route, navigation }: Props) {
     }
   };
 
-  const ingredients = useMemo(
-    () => parseIngredientsField(recipe?.ingredients),
-    [recipe?.ingredients]
-  );
-
-  const instructions = useMemo(
-    () => parseInstructionsField(recipe?.instructions),
-    [recipe?.instructions]
-  );
+  const ingredients = recipe ? parseIngredientsField(recipe.ingredients) : [];
+  const instructions = recipe
+    ? parseInstructionsField(recipe.instructions)
+    : [];
 
   const enterEdit = () => {
     if (!recipe) return;
@@ -112,23 +106,19 @@ export default function RecipeScreen({ route, navigation }: Props) {
       Alert.alert("Saknas uppgifter", "Fyll i alla fält innan du sparar.");
       return;
     }
-
     try {
       setSaving(true);
-
       await updateRecipe(recipe.id, {
         title: titleText.trim(),
         ingredients: toLines(ingredientsText),
         instructions: instructionsText.trim(),
       });
-
       setRecipe({
         ...recipe,
         title: titleText.trim(),
         ingredients: toLines(ingredientsText),
         instructions: instructionsText.trim(),
       });
-
       setEditing(false);
     } catch (err: any) {
       Alert.alert("Kunde inte spara", err?.message ?? "Okänt fel");
@@ -139,7 +129,6 @@ export default function RecipeScreen({ route, navigation }: Props) {
 
   const onDelete = () => {
     if (!recipe) return;
-
     Alert.alert(
       "Radera recept",
       "Är du säker på att du vill radera det här receptet? Detta går inte att ångra.",
@@ -187,7 +176,6 @@ export default function RecipeScreen({ route, navigation }: Props) {
         >
           Something went wrong while fetching the recipe. Please try again.
         </Text>
-
         <Button
           variant="solid"
           action="primary"
@@ -223,7 +211,6 @@ export default function RecipeScreen({ route, navigation }: Props) {
           We couldn't find the recipe you're looking for. It may have been
           removed.
         </Text>
-
         <Button
           variant="outline"
           size="md"
@@ -263,16 +250,12 @@ export default function RecipeScreen({ route, navigation }: Props) {
             editable={!saving && !deleting}
           />
         ) : (
-          <>
-            <Text style={styles.headerTitle} numberOfLines={2}>
-              {recipe.title}
-            </Text>
-            <View style={{ width: 40, height: 40 }} />
-          </>
+          <Text style={styles.headerTitle} numberOfLines={2}>
+            {recipe.title}
+          </Text>
         )}
       </View>
 
-      {/* INGREDIENTS */}
       <Text style={styles.sectionHeader}>Ingredients</Text>
       {editing ? (
         <TextInput
@@ -280,7 +263,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
           onChangeText={setIngredientsText}
           multiline
           textAlignVertical="top"
-          placeholder={"Enter ingredients (one per line)"}
+          placeholder="Enter ingredients (one per line)"
           style={[styles.input, styles.textareaMedium]}
           editable={!saving && !deleting}
         />
@@ -289,13 +272,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
           {ingredients.map((item, i) => (
             <View key={i} style={styles.bulletRow}>
               <View style={styles.bulletDot} />
-              <Text
-                style={[styles.bodyText, styles.rowText]}
-                textBreakStrategy="balanced"
-                lineBreakStrategyIOS="hangul-word"
-              >
-                {item}
-              </Text>
+              <Text style={[styles.bodyText, styles.rowText]}>{item}</Text>
             </View>
           ))}
         </View>
@@ -314,7 +291,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
           onChangeText={setInstructionsText}
           multiline
           textAlignVertical="top"
-          placeholder={"Enter cooking instructions step by step..."}
+          placeholder="Enter cooking instructions step by step..."
           style={[styles.input, styles.textareaLarge]}
           editable={!saving && !deleting}
         />
@@ -325,13 +302,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
               <View style={styles.stepBadge}>
                 <Text style={styles.stepBadgeText}>{i + 1}</Text>
               </View>
-              <Text
-                style={[styles.bodyText, styles.rowText]}
-                textBreakStrategy="balanced"
-                lineBreakStrategyIOS="hangul-word"
-              >
-                {step}
-              </Text>
+              <Text style={[styles.bodyText, styles.rowText]}>{step}</Text>
             </View>
           ))}
         </View>
@@ -445,14 +416,12 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: TEXT_PRIMARY,
   },
-
   content: {
     paddingHorizontal: 16,
     paddingTop: 14,
     paddingBottom: 24,
     backgroundColor: SURFACE,
   },
-
   sectionHeader: {
     fontSize: 18,
     fontWeight: "800",
@@ -467,7 +436,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   muted: { color: TEXT_SECONDARY, fontSize: 14 },
-
   input: {
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
@@ -485,7 +453,6 @@ const styles = StyleSheet.create({
   },
   textareaMedium: { minHeight: 110 },
   textareaLarge: { minHeight: 160 },
-
   bulletRow: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -498,13 +465,11 @@ const styles = StyleSheet.create({
     backgroundColor: PRIMARY,
     marginTop: 8,
   },
-
   divider: {
     height: 1,
     backgroundColor: "#F1F1F4",
     marginVertical: 18,
   },
-
   stepRow: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -524,7 +489,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "800",
   },
-
   bottomBar: {
     position: "absolute",
     left: 0,
@@ -536,7 +500,6 @@ const styles = StyleSheet.create({
     borderTopColor: "#EDEDED",
     gap: 10,
   },
-
   centerFull: {
     flex: 1,
     alignItems: "center",
@@ -566,7 +529,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#EEF1F5",
     marginBottom: 12,
   },
-
   pill: { borderRadius: 18, height: 52 },
   primaryBtn: { backgroundColor: PRIMARY },
   secondaryBtn: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
