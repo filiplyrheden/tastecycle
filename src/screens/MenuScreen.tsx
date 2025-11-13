@@ -59,7 +59,7 @@ export default function MenuScreen({ navigation }: Props) {
             }))
           );
         }
-      } catch (e) {}
+      } catch {}
     })();
   }, []);
 
@@ -76,18 +76,6 @@ export default function MenuScreen({ navigation }: Props) {
       setLoading(true);
 
       const next = await generateWeeklyMenu(user.id);
-      setItems(
-        next.map((r) => ({
-          id: r.id,
-          title: r.title,
-          ingredients: r.ingredients
-            ? typeof r.ingredients === "string"
-              ? [r.ingredients]
-              : r.ingredients
-            : [],
-        }))
-      );
-
       const menuJson = toWeeklyMenuJSON(
         next.map((r) => ({
           id: r.id,
@@ -340,7 +328,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  cardPressed: { opacity: 0.95, transform: [{ scale: 0.99 }] },
   cardSelected: { borderColor: "#1F7BFF55", backgroundColor: "#F5F9FF" },
   dayLabel: {
     fontSize: 12,
@@ -350,7 +337,6 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   cardTitle: { fontSize: 16, fontWeight: "600", color: "#1D1D1F" },
-  dot: { width: 8, height: 8, borderRadius: 4 },
 
   actions: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 16, gap: 12 },
   buttonGrid: {
@@ -378,10 +364,7 @@ const styles = StyleSheet.create({
   pillRadius: { borderRadius: 18, height: 56 },
   actionPrimary: { backgroundColor: PRIMARY },
   actionAI: { backgroundColor: ACCENT },
-  actionSecondary: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
   disabledSoft: { opacity: 0.6 },
-
-  buttonTextStyle: { fontSize: 16 },
 
   signOutBtn: {
     height: 28,
