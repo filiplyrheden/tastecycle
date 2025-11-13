@@ -19,12 +19,11 @@ import {
   parseInstructionsField,
   type Recipe,
 } from "../services/recipesService";
-import { updateRecipe } from "../lib/recipes";
+import { updateRecipe, deleteRecipe } from "../lib/recipes";
 import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
 
 type Props = NativeStackScreenProps<AppStackParamList, "Recipe">;
 
-const BG = "#F2F2F7";
 const SURFACE = "#FFFFFF";
 const PRIMARY = "#007AFF";
 const TEXT_PRIMARY = "#1D1D1F";
@@ -42,6 +41,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
   // edit mode state
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false); // ⬅️ nytt
   const [titleText, setTitleText] = useState("");
   const [ingredientsText, setIngredientsText] = useState("");
   const [instructionsText, setInstructionsText] = useState("");
@@ -137,6 +137,35 @@ export default function RecipeScreen({ route, navigation }: Props) {
     }
   };
 
+  const onDelete = () => {
+    if (!recipe) return;
+
+    Alert.alert(
+      "Radera recept",
+      "Är du säker på att du vill radera det här receptet? Detta går inte att ångra.",
+      [
+        { text: "Avbryt", style: "cancel" },
+        {
+          text: "Radera",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setDeleting(true);
+              await deleteRecipe(recipe.id);
+              navigation.goBack();
+            } catch (err: any) {
+              setDeleting(false);
+              Alert.alert(
+                "Kunde inte radera",
+                err?.message ?? "Okänt fel vid radering."
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View style={styles.centerFull}>
@@ -218,7 +247,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
   const Content = (
     <ScrollView
       style={{ flex: 1 }}
-      contentContainerStyle={[styles.content, { paddingBottom: 140 }]}
+      contentContainerStyle={[styles.content, { paddingBottom: 160 }]}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
@@ -231,7 +260,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
             onChangeText={setTitleText}
             placeholder="Recipe title"
             style={[styles.input, styles.titleInput]}
-            editable={!saving}
+            editable={!saving && !deleting}
           />
         ) : (
           <>
@@ -253,7 +282,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
           textAlignVertical="top"
           placeholder={"Enter ingredients (one per line)"}
           style={[styles.input, styles.textareaMedium]}
-          editable={!saving}
+          editable={!saving && !deleting}
         />
       ) : ingredients.length > 0 ? (
         <View style={{ gap: 10 }}>
@@ -287,7 +316,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
           textAlignVertical="top"
           placeholder={"Enter cooking instructions step by step..."}
           style={[styles.input, styles.textareaLarge]}
-          editable={!saving}
+          editable={!saving && !deleting}
         />
       ) : instructions.length > 0 ? (
         <View style={{ gap: 12 }}>
@@ -321,7 +350,7 @@ export default function RecipeScreen({ route, navigation }: Props) {
               action="primary"
               size="md"
               onPress={onSave}
-              disabled={saving}
+              disabled={saving || deleting}
               style={[styles.pill, styles.primaryBtn]}
             >
               {saving ? (
@@ -339,10 +368,32 @@ export default function RecipeScreen({ route, navigation }: Props) {
               size="md"
               action="primary"
               onPress={cancelEdit}
-              disabled={saving}
+              disabled={saving || deleting}
               style={[styles.pill, styles.secondaryBtn]}
             >
               <ButtonText>Cancel</ButtonText>
+            </Button>
+
+            <Button
+              variant="solid"
+              size="md"
+              action="negative"
+              onPress={onDelete}
+              disabled={saving || deleting}
+              style={[styles.pill, styles.destructiveBtn]}
+            >
+              {deleting ? (
+                <>
+                  <ButtonSpinner />
+                  <ButtonText style={{ marginLeft: 8, color: "#B91C1C" }}>
+                    Deleting…
+                  </ButtonText>
+                </>
+              ) : (
+                <ButtonText style={{ color: "#B91C1C" }}>
+                  Delete Recipe
+                </ButtonText>
+              )}
             </Button>
           </>
         ) : (
@@ -519,4 +570,8 @@ const styles = StyleSheet.create({
   pill: { borderRadius: 18, height: 52 },
   primaryBtn: { backgroundColor: PRIMARY },
   secondaryBtn: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
+  destructiveBtn: {
+    backgroundColor: "#FEF2F2",
+    borderColor: "#FECACA",
+  },
 });
