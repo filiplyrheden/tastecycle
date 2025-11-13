@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { readWeeklyMenuLocal } from "./menuStorage";
+import { parseListField } from "../services/recipesService";
 
 export type ShoppingItem = {
   id: string;
@@ -35,22 +36,22 @@ export async function buildShoppingList(
     : days;
 
   const bag = new Map<string, string>();
+
   for (const d of filtered) {
-    const list: string[] = Array.isArray(d.ingredients)
-      ? d.ingredients
-      : d.ingredients
-      ? [d.ingredients]
-      : [];
+    const list: string[] = parseListField(d.ingredients);
 
     for (const raw of list) {
       if (!raw) continue;
+
       const chunks = String(raw)
         .split(",")
         .map((c) => c.trim())
         .filter(Boolean);
+
       for (const c of chunks) {
         const key = normalizeKey(c);
         if (!key) continue;
+
         bag.set(key, toDisplayName(key));
       }
     }
