@@ -131,10 +131,35 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
     <View style={styles.screen}>
       <FlatList
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
         data={items}
         keyExtractor={(i) => i.id}
         ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+        ListFooterComponent={() => (
+          <View style={styles.footerInline}>
+            <View style={styles.footerRow}>
+              <Button
+                variant="solid"
+                size="md"
+                action="primary"
+                onPress={toggleAll}
+                disabled={bulkWorking || items.length === 0}
+                style={[styles.pill, styles.primaryBtn]}
+              >
+                {bulkWorking ? (
+                  <>
+                    <ButtonSpinner />
+                    <ButtonText style={{ marginLeft: 8 }}>Working…</ButtonText>
+                  </>
+                ) : (
+                  <ButtonText>
+                    {allChecked ? "Uncheck All" : "Mark all as checked"}
+                  </ButtonText>
+                )}
+              </Button>
+            </View>
+          </View>
+        )}
         renderItem={({ item }) => (
           <Pressable
             onPress={() => toggle(item.id)}
@@ -152,30 +177,6 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
           </Pressable>
         )}
       />
-
-      <View style={styles.footer}>
-        <View style={styles.footerRow}>
-          <Button
-            variant="solid"
-            size="md"
-            action="primary"
-            onPress={toggleAll}
-            disabled={bulkWorking || items.length === 0}
-            style={[styles.pill, styles.primaryBtn]}
-          >
-            {bulkWorking ? (
-              <>
-                <ButtonSpinner />
-                <ButtonText style={{ marginLeft: 8 }}>Working…</ButtonText>
-              </>
-            ) : (
-              <ButtonText>
-                {allChecked ? "Uncheck All" : "Mark all as checked"}
-              </ButtonText>
-            )}
-          </Button>
-        </View>
-      </View>
     </View>
   );
 }
@@ -223,11 +224,7 @@ const styles = StyleSheet.create({
     color: TEXT_SECONDARY,
   },
 
-  footer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
+  footerInline: {
     padding: 16,
     backgroundColor: SURFACE,
     borderTopWidth: 1,
