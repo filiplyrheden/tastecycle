@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -19,9 +19,6 @@ type Props = NativeStackScreenProps<AppStackParamList, "RecipeCollection">;
 type Recipe = {
   id: string;
   title: string;
-  ingredients?: string[] | string | null;
-  instructions?: string | string[] | null;
-  created_at?: string;
 };
 
 export default function RecipeCollectionScreen({ navigation }: Props) {
@@ -29,18 +26,15 @@ export default function RecipeCollectionScreen({ navigation }: Props) {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const load = useCallback(async () => {
+  async function load() {
     const data = await listMyRecipes();
     setRecipes((data as Recipe[]) ?? []);
-  }, []);
+  }
 
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      await load();
-      setLoading(false);
-    })();
-  }, [load]);
+    setLoading(true);
+    load().finally(() => setLoading(false));
+  }, []);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -73,7 +67,7 @@ export default function RecipeCollectionScreen({ navigation }: Props) {
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Text style={styles.headerTitle}>My Recipes</Text>
         </View>
         <Button
@@ -164,7 +158,6 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
     elevation: 1,
-
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
