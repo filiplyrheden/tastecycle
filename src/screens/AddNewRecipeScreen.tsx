@@ -113,7 +113,7 @@ export default function AddNewRecipeScreen({ navigation }: Props) {
           size="md"
           onPress={onAdd}
           disabled={adding}
-          style={[styles.pill, styles.primaryBtn]}
+          style={styles.pill}
         >
           {adding ? (
             <>
@@ -191,6 +191,5 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   pill: { borderRadius: 18, height: 52 },
-  primaryBtn: {},
   secondaryBtn: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
 });
