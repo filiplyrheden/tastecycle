@@ -129,14 +129,6 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={{ color: TEXT_PRIMARY, fontSize: 16 }}>‹</Text>
-        </Pressable>
-        <Text style={styles.headerTitle}>Shopping List</Text>
-        <View style={{ width: 40, height: 40 }} />
-      </View>
-
       <FlatList
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120 }}
