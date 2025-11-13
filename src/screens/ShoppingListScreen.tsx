@@ -161,20 +161,34 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
           </View>
         )}
         renderItem={({ item }) => (
-          <Pressable
-            onPress={() => toggle(item.id)}
-            style={({ pressed }) => [
-              styles.row,
-              pressed && { backgroundColor: "#F8FAFF" },
-            ]}
-          >
-            <Text
-              style={[styles.rowLabel, item.checked && styles.rowLabelChecked]}
-              numberOfLines={2}
+          <View style={styles.row}>
+            <Pressable
+              onPress={() => toggle(item.id)}
+              hitSlop={8}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: item.checked }}
+              accessibilityLabel={`Markera ${item.name}`}
+              style={[styles.checkbox, item.checked && styles.checkboxChecked]}
             >
-              {item.name}
-            </Text>
-          </Pressable>
+              {item.checked ? <Text style={styles.checkmark}>✓</Text> : null}
+            </Pressable>
+
+            <Pressable
+              onPress={() => toggle(item.id)}
+              hitSlop={8}
+              style={{ flex: 1 }}
+            >
+              <Text
+                style={[
+                  styles.rowLabel,
+                  item.checked && styles.rowLabelChecked,
+                ]}
+                numberOfLines={2}
+              >
+                {item.name}
+              </Text>
+            </Pressable>
+          </View>
         )}
       />
     </View>
@@ -218,7 +232,36 @@ const styles = StyleSheet.create({
     borderColor: "#EEF0F2",
     backgroundColor: "#FFFFFF",
   },
-  rowLabel: { fontSize: 16, fontWeight: "600", color: TEXT_PRIMARY, flex: 1 },
+
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: "#F1F1F4",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+    backgroundColor: "#FFFFFF",
+  },
+  checkboxChecked: {
+    borderColor: PRIMARY,
+    backgroundColor: "#E6F0FF",
+  },
+  checkmark: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: PRIMARY,
+    lineHeight: 16,
+  },
+
+  rowLabel: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "600",
+    color: TEXT_PRIMARY,
+  },
+
   rowLabelChecked: {
     textDecorationLine: "line-through",
     color: TEXT_SECONDARY,
