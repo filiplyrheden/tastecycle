@@ -13,7 +13,6 @@ import {
   buildShoppingList,
   setItemChecked,
   setAllChecked,
-  clearChecked,
   ShoppingItem,
 } from "../utils/shoppingList";
 import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
@@ -38,7 +37,6 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
     () => items.length > 0 && items.every((i) => i.checked),
     [items]
   );
-  const anyChecked = useMemo(() => items.some((i) => i.checked), [items]);
 
   const load = async () => {
     setLoading(true);
@@ -71,16 +69,6 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
       const next = items.map((i) => ({ ...i, checked: target }));
       setItems(next);
       await setAllChecked(allIds, target);
-    } finally {
-      setBulkWorking(false);
-    }
-  };
-
-  const clear = async () => {
-    setBulkWorking(true);
-    try {
-      await clearChecked();
-      await load();
     } finally {
       setBulkWorking(false);
     }
@@ -197,30 +185,6 @@ export default function ShoppingListScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: SURFACE },
-  header: {
-    backgroundColor: SURFACE,
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#EEF0F2",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#F3F4F6",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: "800",
-    color: TEXT_PRIMARY,
-  },
 
   row: {
     flexDirection: "row",
@@ -276,7 +240,6 @@ const styles = StyleSheet.create({
   footerRow: { flexDirection: "row", gap: 10 },
   pill: { borderRadius: 18, height: 52, flex: 1 },
   primaryBtn: { backgroundColor: PRIMARY },
-  secondaryBtn: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
 
   centerFull: {
     flex: 1,
