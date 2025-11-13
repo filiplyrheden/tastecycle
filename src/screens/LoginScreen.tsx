@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  ActivityIndicator,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../App";
@@ -141,27 +140,31 @@ export default function LoginScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F2F2F7",
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 16,
     justifyContent: "center",
   },
 
-  header: { alignItems: "center", marginBottom: 12 },
+  header: {
+    alignItems: "center",
+    marginBottom: 12,
+  },
   appTitle: { fontSize: 28, fontWeight: "800", color: "#1D1D1F" },
   appSubtitle: { fontSize: 14, color: "#8E8E93", marginTop: 4 },
 
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    padding: 18,
+    borderRadius: 18,
+    padding: 16,
     borderWidth: 1,
-    borderColor: "#ECECEC",
+    borderColor: "#F1F1F4",
     shadowColor: "#000",
     shadowOpacity: 0.06,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
+
   cardTitle: {
     fontSize: 22,
     fontWeight: "800",
@@ -192,7 +195,11 @@ const styles = StyleSheet.create({
   },
   eyeText: { color: "#8E8E93", fontWeight: "600" },
 
-  pill: { borderRadius: 18, height: 52, marginTop: 10 },
+  pill: {
+    borderRadius: 18,
+    height: 56,
+    marginTop: 10,
+  },
   primaryBtn: { backgroundColor: PRIMARY },
   secondaryBtn: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
 
