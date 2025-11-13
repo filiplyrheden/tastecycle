@@ -8,16 +8,10 @@ import {
   Platform,
   Pressable,
 } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "../../App";
 import { useAuth } from "../lib/Authprovider";
 import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
 
-type Props = NativeStackScreenProps<AuthStackParamList, "Login">;
-
-const PRIMARY = "#007AFF";
-
-export default function LoginScreen({ navigation }: Props) {
+export default function LoginScreen() {
   const { signIn, signUp } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -144,14 +138,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     justifyContent: "center",
   },
-
   header: {
     alignItems: "center",
     marginBottom: 12,
   },
   appTitle: { fontSize: 28, fontWeight: "800", color: "#1D1D1F" },
   appSubtitle: { fontSize: 14, color: "#8E8E93", marginTop: 4 },
-
   card: {
     backgroundColor: "#FFFFFF",
     borderRadius: 18,
@@ -164,15 +156,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-
-  cardTitle: {
-    fontSize: 22,
-    fontWeight: "800",
-    textAlign: "center",
-    color: "#1D1D1F",
-    marginBottom: 12,
-  },
-
   fieldBlock: { marginTop: 8, marginBottom: 6 },
   label: { fontSize: 12, fontWeight: "700", color: "#8E8E93", marginBottom: 6 },
   input: {
@@ -194,15 +177,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   eyeText: { color: "#8E8E93", fontWeight: "600" },
-
   pill: {
     borderRadius: 18,
     height: 56,
     marginTop: 10,
   },
-  primaryBtn: { backgroundColor: PRIMARY },
+  primaryBtn: { backgroundColor: "#007AFF" },
   secondaryBtn: { backgroundColor: "#F3F4F6", borderColor: "#F3F4F6" },
-
   error: {
     color: "#c00",
     fontWeight: "600",
