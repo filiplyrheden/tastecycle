@@ -45,9 +45,6 @@ Returnera ENDAST giltig JSON:
     ...
   ]
 }
-- "ingredients" MÅSTE vara en JSON-array av strängar där varje ingrediens står på en egen rad i ett eget element.
-  Exempel: "ingredients": ["6 ägg", "1 dl mjölk", "1 dl vetemjöl"]
-  Använd INTE radbrytningar ("\n") inne i elementen.
 
 
 INSTRUKTIONER FÖR ARBETSGÅNG (TYST ANALYS)
@@ -106,11 +103,6 @@ Detaljer för listorna:
   const replacements = parsed?.replacements ?? [];
   if (!Array.isArray(replacements) || replacements.length === 0) {
     throw new Error("AI returnerade inga ersättningar.");
-  }
-
-  const repByOldId: Record<string, Replacement> = {};
-  for (const rep of replacements) {
-    repByOldId[rep.old_id] = rep;
   }
 
   const mapping: Record<
