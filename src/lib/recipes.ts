@@ -2,7 +2,7 @@ import { supabase } from "./supabase";
 
 supabase;
 
-type Ingredient = string; // eller { amount: string; item: string }
+type Ingredient = string;
 type RecipeInput = {
   title: string;
   ingredients: Ingredient[];
