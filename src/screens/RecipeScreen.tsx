@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 20,
     paddingBottom: 12,
-    paddingHorizontal: 16,
+    marginBottom: 12,
     backgroundColor: SURFACE,
     borderBottomWidth: 1,
     borderBottomColor: "#EEF0F2",
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     flex: 1,
-    fontSize: 20,
+    fontSize: 36,
     fontWeight: "800",
     color: TEXT_PRIMARY,
   },
