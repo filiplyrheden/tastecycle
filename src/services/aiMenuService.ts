@@ -104,7 +104,15 @@ Detaljer för listorna:
     throw new Error("AI returnerade inga ersättningar.");
   }
 
-  const mapping: Record<string, { id: string; title: string }> = {};
+  const repByOldId: Record<string, Replacement> = {};
+  for (const rep of replacements) {
+    repByOldId[rep.old_id] = rep;
+  }
+
+  const mapping: Record<
+    string,
+    { id: string; title: string; ingredients: string[]; instructions: string[] }
+  > = {};
 
   for (const rep of replacements) {
     if (!selectedIds.includes(rep.old_id)) continue;
@@ -117,13 +125,28 @@ Detaljer för listorna:
     };
 
     const created = await createRecipe(draft);
-    mapping[rep.old_id] = { id: created.id, title: created.title };
+
+    mapping[rep.old_id] = {
+      id: created.id,
+      title: created.title,
+      ingredients: draft.ingredients ?? [],
+      instructions: draft.instructions ?? [],
+    };
   }
+
   const updated: WeeklyMenuJSON = {
     ...menu,
     days: menu.days.map((d) => {
       const m = mapping[d.id];
-      return m ? { ...d, id: m.id, title: m.title } : d;
+      return m
+        ? {
+            ...d,
+            id: m.id,
+            title: m.title,
+            ingredients: m.ingredients,
+            instructions: m.instructions,
+          }
+        : d;
     }),
   };
 

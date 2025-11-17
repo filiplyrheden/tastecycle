@@ -217,8 +217,13 @@ export default function MenuScreen({ navigation }: Props) {
               try {
                 const updated = await replaceRecipesWithAI(selectedDays);
                 setItems(
-                  updated.days.map((d: any) => ({ id: d.id, title: d.title }))
+                  updated.days.map((d: any) => ({
+                    id: d.id,
+                    title: d.title,
+                    ingredients: d.ingredients ?? [],
+                  }))
                 );
+
                 setSelectedDays([]);
               } catch (err: any) {
                 console.error("AI-fel:", err);
