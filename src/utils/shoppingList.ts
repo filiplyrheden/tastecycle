@@ -43,17 +43,13 @@ export async function buildShoppingList(
     for (const raw of list) {
       if (!raw) continue;
 
-      const chunks = String(raw)
-        .split(",")
-        .map((c) => c.trim())
-        .filter(Boolean);
+      const c = String(raw).trim();
+      if (!c) continue;
 
-      for (const c of chunks) {
-        const key = normalizeKey(c);
-        if (!key) continue;
+      const key = normalizeKey(c);
+      if (!key) continue;
 
-        bag.set(key, toDisplayName(key));
-      }
+      bag.set(key, toDisplayName(key));
     }
   }
 

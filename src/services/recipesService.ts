@@ -139,7 +139,7 @@ export function parseIngredientsField(field?: unknown): string[] {
     } catch {}
 
     return field
-      .split(/\r?\n|,|;/)
+      .split(/\r?\n/)
       .map((s) => s.trim())
       .filter(Boolean);
   }
