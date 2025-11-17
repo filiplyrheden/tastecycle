@@ -10,14 +10,11 @@ import RecipeCollectionScreen from "./src/screens/RecipeCollectionScreen";
 import AddNewRecipeScreen from "./src/screens/AddNewRecipeScreen";
 import ShoppingListScreen from "./src/screens/ShoppingListScreen";
 
-AuthProvider;
-
 export type AuthStackParamList = {
   Login: undefined;
 };
 
 export type AppStackParamList = {
-  Debug: undefined;
   Menu: undefined;
   AddNewRecipe: undefined;
   RecipeCollection: { title?: string } | undefined;
@@ -30,15 +27,13 @@ const AppStack = createNativeStackNavigator<AppStackParamList>();
 
 function AuthNavigator() {
   return (
-    <GluestackUIProvider mode="dark">
-      <AuthStack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
-        <AuthStack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ title: "" }}
-        />
-      </AuthStack.Navigator>
-    </GluestackUIProvider>
+    <AuthStack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
+      <AuthStack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ title: "" }}
+      />
+    </AuthStack.Navigator>
   );
 }
 
@@ -85,7 +80,7 @@ export default function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
-        <GluestackUIProvider>
+        <GluestackUIProvider mode="dark">
           <RootNavigator />
         </GluestackUIProvider>
       </NavigationContainer>

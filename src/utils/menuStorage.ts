@@ -20,7 +20,6 @@ export type WeeklyMenuJSON = {
   };
 };
 
-// --- Hjälpfunktioner ---
 function getISOWeekKey(date = new Date()) {
   const d = new Date(
     Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
@@ -58,7 +57,6 @@ export function toWeeklyMenuJSON(
   return { week, user_id: userId, days, constraints: opts?.constraints };
 }
 
-// --- Nya FileSystem-funktioner (SDK 54+) ---
 export async function saveWeeklyMenuLocal(menu: WeeklyMenuJSON) {
   const dir = new Directory(Paths.document, "menus");
   const file = new File(dir, `${menu.week}.json`);
