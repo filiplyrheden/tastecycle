@@ -45,6 +45,10 @@ Returnera ENDAST giltig JSON:
     ...
   ]
 }
+- "ingredients" MÅSTE vara en JSON-array av strängar där varje ingrediens står på en egen rad i ett eget element.
+  Exempel: "ingredients": ["6 ägg", "1 dl mjölk", "1 dl vetemjöl"]
+  Använd INTE radbrytningar ("\n") inne i elementen.
+
 
 INSTRUKTIONER FÖR ARBETSGÅNG (TYST ANALYS)
 1) Sammanfatta menyn för dig själv: lista kök/region, huvudprotein, tillagningssätt, tidsnivå, samt rätternas ingrediens- och steglängd.
