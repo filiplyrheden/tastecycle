@@ -3,9 +3,9 @@
 TasteCycle is a React Native app built with Expo that helps you plan a weekly menu from your personal recipe collection. It can generate a shopping list, rotate recipes weekly, and even replace selected dishes with AI-generated alternatives.
 
 <p align="center">
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2025-11-17 at 10 00 07" src="https://github.com/user-attachments/assets/2a748c89-3a2b-443c-8165-ff4661f5736d" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2025-11-17 at 10 00 14" src="https://github.com/user-attachments/assets/523024ba-2c84-4b48-bfbc-08c8a118c328" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2025-11-17 at 10 00 26" src="https://github.com/user-attachments/assets/cc2be789-e4c7-4349-9e4f-32b8f09ab66d" />
+<img width="30%" alt="Simulator Screenshot - iPhone 17 Pro - 2025-11-17 at 10 00 07" src="https://github.com/user-attachments/assets/2a748c89-3a2b-443c-8165-ff4661f5736d" />
+<img width="30%" alt="Simulator Screenshot - iPhone 17 Pro - 2025-11-17 at 10 00 14" src="https://github.com/user-attachments/assets/523024ba-2c84-4b48-bfbc-08c8a118c328" />
+<img width="30%" alt="Simulator Screenshot - iPhone 17 Pro - 2025-11-17 at 10 00 26" src="https://github.com/user-attachments/assets/cc2be789-e4c7-4349-9e4f-32b8f09ab66d" />
 </p>
 
 ## Features
