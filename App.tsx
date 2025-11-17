@@ -32,7 +32,11 @@ function AuthNavigator() {
   return (
     <GluestackUIProvider mode="dark">
       <AuthStack.Navigator screenOptions={{ headerTitleAlign: "center" }}>
-        <AuthStack.Screen name="Login" component={LoginScreen} />
+        <AuthStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ title: "" }}
+        />
       </AuthStack.Navigator>
     </GluestackUIProvider>
   );
